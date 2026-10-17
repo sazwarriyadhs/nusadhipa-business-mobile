@@ -34,9 +34,24 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<void> _loadData() async {
     setState(() => loading = true);
     try {
-      final products = await ApiService().getProducts(limit: 100);
-      final categories = await ApiService().getCategories();
-      final sellers = products.map((p) => p.businessName).toSet();
+      // 1. Get current business dulu
+      final business = await ApiService().getMyBusiness();
+
+      // 2. Fetch products FILTERED by business
+      final products = await ApiService().getProducts(
+        businessSlug: business.slug,
+        limit: 100,
+      );
+
+      // 3. Categories dari produk (unique)
+      final categories = products
+          .map((p) => p.categoryName)
+          .where((c) => c.isNotEmpty)
+          .toSet()
+          .toList();
+
+      // 4. Sellers = 1 (current business)
+      final sellers = <String>{business.businessName};
 
       if (!mounted) return;
       setState(() {

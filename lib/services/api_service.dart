@@ -24,17 +24,22 @@ class ApiService {
   factory ApiService() => _instance;
   ApiService._();
 
+  Future<Map<String, String>> _getHeaders({bool isJson = true}) async {
+    final token = await AuthService().getToken();
+    final headers = <String, String>{'Accept': 'application/json'};
+    if (isJson) headers['Content-Type'] = 'application/json';
+    if (token != null && token.isNotEmpty) headers['Authorization'] = 'Bearer $token';
+    return headers;
+  }
+
+
   Future<Map<String, dynamic>> _get(String path,
       {Map<String, String>? query}) async {
     final uri = Uri.parse('${ApiConfig.kApiBaseUrl}$path')
         .replace(queryParameters: query);
 
     try {
-      final token = await AuthService().getToken();
-      final headers = <String, String>{'Accept': 'application/json'};
-      if (token != null && token.isNotEmpty) {
-        headers['Authorization'] = 'Bearer $token';
-      }
+      final headers = await _getHeaders(isJson: false);
 
       final response = await http
           .get(uri, headers: headers)
@@ -179,10 +184,7 @@ class ApiService {
       final response = await http
           .post(
             uri,
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-            },
+            headers: await _getHeaders(),
             body: jsonEncode({
               'name': name.trim(),
               'price': price,
@@ -244,10 +246,7 @@ class ApiService {
       final response = await http
           .put(
             uri,
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-            },
+            headers: await _getHeaders(),
             body: jsonEncode(body),
           )
           .timeout(const Duration(milliseconds: ApiConfig.kTimeoutMs));
@@ -288,7 +287,7 @@ class ApiService {
       final response = await http
           .delete(
             uri,
-            headers: {'Accept': 'application/json'},
+            headers: await _getHeaders(),
           )
           .timeout(const Duration(milliseconds: ApiConfig.kTimeoutMs));
 
@@ -338,6 +337,8 @@ class ApiService {
 
     try {
       final request = http.MultipartRequest('POST', uri);
+      final headers = await _getHeaders(isJson: false);
+      request.headers.addAll(headers);
 
       final ext = imageFile.path.split('.').last.toLowerCase();
       final mimeType = ext == 'png'
@@ -385,3 +386,4 @@ class ApiService {
     }
   }
 }
+

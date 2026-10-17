@@ -4,6 +4,101 @@ import '../models/business.dart';
 import '../services/api_service.dart';
 import 'demo_message.dart';
 
+// ============================================================
+// KBLI → Kategori Cover Image
+// ============================================================
+const Map<String, String> kbliToCover = {
+  // 01 - Makanan & Minuman
+  "56101": "01-makanan-minuman",
+  "56102": "01-makanan-minuman",
+  "56201": "01-makanan-minuman",
+  
+  // 03 - Peternakan, Daging, Perikanan
+  "46322": "03-peternakan-daging-perikanan",
+  "46325": "03-peternakan-daging-perikanan",
+  "46205": "03-peternakan-daging-perikanan",
+  "46311": "03-peternakan-daging-perikanan",
+  "46319": "03-peternakan-daging-perikanan",
+  "47211": "03-peternakan-daging-perikanan",
+  "47212": "03-peternakan-daging-perikanan",
+  
+  // 04 - Petfood & Kebutuhan Hewan
+  "47731": "04-petfood-kebutuhan-hewan",
+  "47732": "04-petfood-kebutuhan-hewan",
+  "47733": "04-petfood-kebutuhan-hewan",
+  
+  // 05 - Fashion & Aksesori
+  "14111": "05-fashion-aksesori",
+  "14112": "05-fashion-aksesori",
+  "47511": "05-fashion-aksesori",
+  "47512": "05-fashion-aksesori",
+  "47711": "05-fashion-aksesori",
+  
+  // 06 - Kerajinan & Produk Kreatif
+  "16101": "06-kerajinan-produk-kreatif",
+  "16291": "06-kerajinan-produk-kreatif",
+  "32901": "06-kerajinan-produk-kreatif",
+  
+  // 07 - Rumah Tangga & Perlengkapan
+  "47531": "07-rumah-tangga-perlengkapan",
+  "47532": "07-rumah-tangga-perlengkapan",
+  "47781": "07-rumah-tangga-perlengkapan",
+  
+  // 08 - Kecantikan & Perawatan Diri
+  "47721": "08-kecantikan-perawatan-diri",
+  "47722": "08-kecantikan-perawatan-diri",
+  "96011": "08-kecantikan-perawatan-diri",
+  
+  // 09 - Tanaman, Bunga & Florist
+  "47761": "09-tanaman-bunga-florist",
+  "47762": "09-tanaman-bunga-florist",
+  "01301": "09-tanaman-bunga-florist",
+  "01309": "09-tanaman-bunga-florist",
+  
+  // 10 - Elektronik & Peralatan
+  "47411": "10-elektronik-peralatan",
+  "47412": "10-elektronik-peralatan",
+  "47413": "10-elektronik-peralatan",
+  
+  // 11 - Jasa & Layanan Bisnis
+  "62010": "11-jasa-layanan-bisnis",
+  "62020": "11-jasa-layanan-bisnis",
+  "62900": "11-jasa-layanan-bisnis",
+  "70201": "11-jasa-layanan-bisnis",
+  "73100": "11-jasa-layanan-bisnis",
+  
+  // 12 - Industri, Grosir & B2B
+  "46900": "12-industri-grosir-b2b",
+};
+
+String getCoverImageForBusiness(Business? business) {
+  if (business == null) return "01-makanan-minuman";
+  
+  // 1. Cek dari kbli_code (kalau ada)
+  final kbli = business.kbliCode;
+  if (kbli != null && kbliToCover.containsKey(kbli)) {
+    return kbliToCover[kbli]!;
+  }
+  
+  // 2. Fallback: dari nama bisnis
+  final name = business.businessName.toLowerCase();
+  if (name.contains("bunga") || name.contains("florist")) {
+    return "09-tanaman-bunga-florist";
+  }
+  if (name.contains("ayam") || name.contains("daging") || name.contains("ikan") || name.contains("unggas")) {
+    return "03-peternakan-daging-perikanan";
+  }
+  if (name.contains("kucing") || name.contains("anjing") || name.contains("pet")) {
+    return "04-petfood-kebutuhan-hewan";
+  }
+  if (name.contains("digital") || name.contains("media") || name.contains("teknologi") || name.contains("komunika")) {
+    return "11-jasa-layanan-bisnis";
+  }
+  
+  // 3. Default
+  return "01-makanan-minuman";
+}
+
 class BrandHeader extends StatefulWidget {
   const BrandHeader({super.key});
 
@@ -43,7 +138,7 @@ class _BrandHeaderState extends State<BrandHeader> {
         const _WhiteTopHeader(),
 
         // ===== COVER IMAGE =====
-        const _CoverImage(),
+        _CoverImage(business: business),
 
         // ===== TENANT CARD (rapih, di bawah cover) =====
         Padding(
@@ -120,20 +215,30 @@ class _WhiteTopHeader extends StatelessWidget {
 // COVER IMAGE
 // ============================================================
 class _CoverImage extends StatelessWidget {
-  const _CoverImage();
+  final Business? business;
+  const _CoverImage({this.business});
 
   @override
   Widget build(BuildContext context) {
+    final coverSlug = getCoverImageForBusiness(business);
+    final coverUrl = 'https://nusadhipa.shop/kategori/$coverSlug.png';
+
     return SizedBox(
       height: 160,
       width: double.infinity,
-      child: Image.asset(
-        'assets/branding/Fresh Poultry Processing Showcase.png',
+      child: Image.network(
+        coverUrl,
         fit: BoxFit.cover,
         errorBuilder: (_, _, _) => Container(
-          color: deepRed,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFFE5232E), Color(0xFFC41E28)],
+            ),
+          ),
           child: const Center(
-            child: Icon(Icons.image, color: Colors.white, size: 40),
+            child: Icon(Icons.storefront, color: Colors.white, size: 48),
           ),
         ),
       ),
@@ -187,15 +292,23 @@ class _TenantCard extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(11),
-                  child: Image.asset(
-                    'assets/branding/sauri_logo.png',
-                    fit: BoxFit.contain,
-                    errorBuilder: (_, _, _) => const Icon(
-                      Icons.storefront,
-                      color: brandRed,
-                      size: 32,
-                    ),
-                  ),
+                  child: business?.logoUrl != null
+                      ? Image.network(
+                          business!.logoUrl!.startsWith('http')
+                              ? business!.logoUrl!
+                              : 'https://api.nusadhipa.shop${business!.logoUrl}',
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, _, _) => const Icon(
+                            Icons.storefront,
+                            color: brandRed,
+                            size: 32,
+                          ),
+                        )
+                      : const Icon(
+                          Icons.storefront,
+                          color: brandRed,
+                          size: 32,
+                        ),
                 ),
               ),
               if (isVerified)
