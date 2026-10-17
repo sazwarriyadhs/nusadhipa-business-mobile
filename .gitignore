@@ -13,37 +13,24 @@ build/
 *.iml
 *.ipr
 *.iws
-
 # OS
 .DS_Store
 Thumbs.db
-
 # Backup files
 *.bak
 *.bak_*
 *.bak-*
-
 # Signing
 *.jks
 *.keystore
 key.properties
-
 # Env
 .env
 .env.local
 .env.production
-
 # Ignore (ditambah)
-*.bak
-*.bak-*
-*.bak_*
 *.log
 _/backups/
 _backups/
-build/
-.idea/
-*.iml
 *.pyc
 __pycache__/
-.DS_Store
-Thumbs.db
