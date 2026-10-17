@@ -72,7 +72,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 physics: const NeverScrollableScrollPhysics(),
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: 1.15,
+                childAspectRatio: 1.55,
                 children: [
                   Metric(
                     'Produk aktif',
@@ -321,48 +321,82 @@ class _InsightCard extends StatelessWidget {
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFE5232E),
+            Color(0xFFC41E28),
+          ],
+        ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: line),
         boxShadow: [
           BoxShadow(
-            color: brandRed.withValues(alpha: 0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: brandRed.withValues(alpha: 0.35),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Stack(
         children: [
+          // Decorative circle (pojok kanan atas)
           Positioned(
-            left: 0,
-            top: 0,
-            bottom: 0,
+            right: -20,
+            top: -20,
             child: Container(
-              width: 3,
-              decoration: const BoxDecoration(gradient: brandGradient),
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
             ),
           ),
+          Positioned(
+            right: 20,
+            bottom: -30,
+            child: Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.05),
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+          // Content
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 14, 12, 14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Row(
                   children: [
-                    Text(icon, style: const TextStyle(fontSize: 20)),
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        icon,
+                        style: const TextStyle(fontSize: 22),
+                      ),
+                    ),
                     const Spacer(),
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: trendColor.withValues(alpha: 0.12),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         trend,
-                        style: TextStyle(
-                          color: trendColor,
+                        style: const TextStyle(
+                          color: Colors.white,
                           fontSize: 9,
                           fontWeight: FontWeight.w900,
                         ),
@@ -372,21 +406,22 @@ class _InsightCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  label,
+                  value,
                   style: const TextStyle(
-                    fontSize: 10,
-                    color: muted,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 26,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    letterSpacing: -1,
+                    height: 1.1,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                    color: brandRed,
-                    letterSpacing: -0.3,
+                  label,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Colors.white.withValues(alpha: 0.85),
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
