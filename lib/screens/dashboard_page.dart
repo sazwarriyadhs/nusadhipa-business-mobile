@@ -331,7 +331,6 @@ class _InsightCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final trendColor = trendUp ? emeraldGreen : brandRed;
 
     return Container(
       clipBehavior: Clip.antiAlias,
