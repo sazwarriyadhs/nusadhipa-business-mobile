@@ -313,6 +313,54 @@ class ApiService {
     }
   }
 
+    // ==================== UPLOAD LOGO ====================
+  Future<void> uploadLogo(File imageFile) async {
+    final uri = Uri.parse('${ApiConfig.kApiBaseUrl}/businesses/me/logo');
+    try {
+      final request = http.MultipartRequest('POST', uri);
+      final headers = await _getHeaders(isJson: false);
+      request.headers.addAll(headers);
+      request.files.add(await http.MultipartFile.fromPath('logo', imageFile.path));
+      
+      final streamed = await request.send().timeout(const Duration(milliseconds: 30000));
+      final response = await http.Response.fromStream(streamed);
+      final json = jsonDecode(response.body);
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw ApiException(json['message']?.toString() ?? 'Gagal upload logo');
+      }
+    } on TimeoutException {
+      throw ApiException('Upload timeout.');
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw ApiException('Gagal upload logo: $e');
+    }
+  }
+
+  // ==================== UPLOAD BANNER ====================
+  Future<void> uploadBanner(File imageFile) async {
+    final uri = Uri.parse('${ApiConfig.kApiBaseUrl}/businesses/me/banner');
+    try {
+      final request = http.MultipartRequest('POST', uri);
+      final headers = await _getHeaders(isJson: false);
+      request.headers.addAll(headers);
+      request.files.add(await http.MultipartFile.fromPath('banner', imageFile.path));
+      
+      final streamed = await request.send().timeout(const Duration(milliseconds: 30000));
+      final response = await http.Response.fromStream(streamed);
+      final json = jsonDecode(response.body);
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw ApiException(json['message']?.toString() ?? 'Gagal upload banner');
+      }
+    } on TimeoutException {
+      throw ApiException('Upload timeout.');
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw ApiException('Gagal upload banner: $e');
+    }
+  }
+
+  // ==================== GET MY BUSINESS (Pastikan udah ada) ====================
+  // (Kalau lu udah punya fungsi ini, biarin aja, ini cuma jaga-jaga)
   // ==================== GET PRODUCT DETAIL ====================
   Future<Product> getProduct(String slug) async {
     final json = await _get(
@@ -386,4 +434,5 @@ class ApiService {
     }
   }
 }
+
 

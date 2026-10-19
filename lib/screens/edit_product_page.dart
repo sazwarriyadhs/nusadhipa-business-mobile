@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import '../config/api_config.dart';
 import '../config/theme.dart';
@@ -22,6 +24,15 @@ class _EditProductPageState extends State<EditProductPage> {
 
   String? _selectedCategory;
   bool _submitting = false;
+  File? _newImageFile; // <--- File gambar baru
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      setState(() => _newImageFile = File(picked.path));
+    }
+  }
 
   static const categories = [
     ('daging-unggas', 'Daging & Unggas'),
@@ -75,6 +86,14 @@ class _EditProductPageState extends State<EditProductPage> {
             : _descController.text,
         categorySlug: _selectedCategory,
       );
+
+      // Kalau user ganti gambar, upload gambar baru
+      if (_newImageFile != null) {
+        await ApiService().uploadProductImage(
+          productPublicId: widget.product.publicId,
+          imageFile: _newImageFile!,
+        );
+      }
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -188,32 +207,43 @@ class _EditProductPageState extends State<EditProductPage> {
               ),
             ),
             const SizedBox(height: 8),
-            Container(
-              height: 160,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: line),
+            GestureDetector(
+              onTap: _pickImage, // <--- Bisa diklik buat ganti foto
+              child: Container(
+                height: 160,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: line),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: _newImageFile != null
+                    ? Image.file(_newImageFile!, fit: BoxFit.cover, width: double.infinity)
+                    : (imageUrl != null
+                        ? Image.network(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            errorBuilder: (_, __, ___) => const Center(
+                              child: Icon(Icons.inventory_2_outlined,
+                                  color: muted, size: 48),
+                            ),
+                          )
+                        : const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.add_a_photo_outlined, color: muted, size: 40),
+                                SizedBox(height: 8),
+                                Text('Tap untuk pilih foto', style: TextStyle(fontSize: 12, color: muted)),
+                              ],
+                            ),
+                          )),
               ),
-              clipBehavior: Clip.antiAlias,
-              child: imageUrl != null
-                  ? Image.network(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      errorBuilder: (_, _, _) => const Center(
-                        child: Icon(Icons.inventory_2_outlined,
-                            color: muted, size: 48),
-                      ),
-                    )
-                  : const Center(
-                      child: Icon(Icons.inventory_2_outlined,
-                          color: muted, size: 48),
-                    ),
             ),
             const SizedBox(height: 6),
             const Text(
-              'Untuk ganti foto, upload dari tab Tambah Produk dengan nama sama.',
+              'Tap gambar untuk mengganti foto produk.',
               style: TextStyle(fontSize: 10, color: muted, fontStyle: FontStyle.italic),
             ),
             const SizedBox(height: 20),
@@ -277,7 +307,9 @@ class _EditProductPageState extends State<EditProductPage> {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                  value: _selectedCategory,
+                                    value: categories.any((c) => c.$1 == _selectedCategory)
+                      ? _selectedCategory
+                      : null,
                   isExpanded: true,
                   hint: const Text(
                     'Pilih kategori...',
@@ -424,3 +456,5 @@ class _Field extends StatelessWidget {
     );
   }
 }
+
+

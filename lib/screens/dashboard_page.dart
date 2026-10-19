@@ -87,7 +87,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 physics: const NeverScrollableScrollPhysics(),
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: 1.55,
+                childAspectRatio: 1.4,
                 children: [
                   Metric(
                     'Produk aktif',
@@ -446,3 +446,4 @@ class _InsightCard extends StatelessWidget {
     );
   }
 }
+

@@ -1,3 +1,5 @@
+import 'add_product_page.dart';
+import 'edit_product_page.dart';
 import 'package:flutter/material.dart';
 import '../config/api_config.dart';
 import '../config/theme.dart';
@@ -33,7 +35,6 @@ class _ProductsPageState extends State<ProductsPage> {
     });
 
     try {
-      // 1. Fetch business yang login (untuk dapet slug)
       Business? biz;
       try {
         biz = await ApiService().getMyBusiness();
@@ -41,7 +42,6 @@ class _ProductsPageState extends State<ProductsPage> {
         biz = null;
       }
 
-      // 2. Fetch produk — filter by business slug (kalau ada)
       final result = await ApiService().getProducts(
         limit: 100,
         businessSlug: biz?.slug,
@@ -77,58 +77,78 @@ class _ProductsPageState extends State<ProductsPage> {
             p.businessName.toLowerCase().contains(search.toLowerCase()))
         .toList();
 
-    return SafeArea(
-      child: Column(
-        children: [
-          Heading(
-            'Produk',
-            _business != null
-                ? 'Katalog ${_business!.businessName}'
-                : 'Katalog live dari marketplace',
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: line),
-                boxShadow: [
-                  BoxShadow(
-                    color: brandRed.withValues(alpha: 0.06),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+    return Stack(
+      children: [
+        SafeArea(
+          child: Column(
+            children: [
+              Heading(
+                'Produk',
+                _business != null
+                    ? 'Katalog ${_business!.businessName}'
+                    : 'Katalog live dari marketplace',
               ),
-              child: TextField(
-                onChanged: (v) => setState(() => search = v),
-                decoration: InputDecoration(
-                  hintText: 'Cari produk atau kategori...',
-                  hintStyle: const TextStyle(fontSize: 13, color: muted),
-                  prefixIcon: const Icon(Icons.search_rounded,
-                      color: brandRed, size: 22),
-                  filled: true,
-                  fillColor: Colors.transparent,
-                  border: OutlineInputBorder(
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide.none,
+                    border: Border.all(color: line),
+                    boxShadow: [
+                      BoxShadow(
+                        color: brandRed.withValues(alpha: 0.06),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                  child: TextField(
+                    onChanged: (v) => setState(() => search = v),
+                    decoration: InputDecoration(
+                      hintText: 'Cari produk atau kategori...',
+                      hintStyle: const TextStyle(fontSize: 13, color: muted),
+                      prefixIcon: const Icon(Icons.search_rounded,
+                          color: brandRed, size: 22),
+                      filled: true,
+                      fillColor: Colors.transparent,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                  ),
                 ),
               ),
-            ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: loading
+                    ? const Center(child: CircularProgressIndicator())
+                    : error != null
+                        ? _buildError()
+                        : _buildList(result),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
-          Expanded(
-            child: loading
-                ? const Center(child: CircularProgressIndicator())
-                : error != null
-                    ? _buildError()
-                    : _buildList(result),
+        ),
+        // TOMBOL TAMBAH PRODUK
+        Positioned(
+          bottom: 20,
+          right: 20,
+          child: FloatingActionButton(
+            onPressed: () async {
+              final res = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddProductPage()),
+              );
+              if (res == true) _loadProducts();
+            },
+            backgroundColor: brandRed,
+            child: const Icon(Icons.add, color: Colors.white),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -191,7 +211,7 @@ class _ProductsPageState extends State<ProductsPage> {
           }
 
           final product = items[index - 1];
-          return _ProductTile(product: product);
+          return _ProductTile(product: product, onRefresh: _loadProducts);
         },
       ),
     );
@@ -200,72 +220,145 @@ class _ProductsPageState extends State<ProductsPage> {
 
 class _ProductTile extends StatelessWidget {
   final Product product;
-  const _ProductTile({required this.product});
+  final VoidCallback onRefresh;
+  const _ProductTile({required this.product, required this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
     final imageUrl = ApiConfig.resolveImageUrl(product.imageUrl);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: line),
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Container(
-              width: 64,
-              height: 64,
-              color: brandRed.withValues(alpha: 0.08),
-              child: imageUrl != null
-                  ? Image.network(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Icon(
-                        Icons.image_outlined,
-                        color: brandRed,
-                      ),
-                    )
-                  : const Icon(Icons.image_outlined, color: brandRed),
-            ),
+    return InkWell(
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
-          const SizedBox(width: 12),
-          Expanded(
+          builder: (ctx) => SafeArea(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  product.name,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                ListTile(
+                  leading: const Icon(Icons.edit, color: Colors.blue),
+                  title: const Text('Edit Produk'),
+                  onTap: () async {
+                    Navigator.pop(ctx);
+                    // BUKA HALAMAN EDIT
+                    final res = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditProductPage(product: product),
+                      ),
+                    );
+                    if (res == true) onRefresh();
+                  },
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  product.categoryName,
-                  style: const TextStyle(fontSize: 11, color: muted),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Rp ${product.minPrice}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: brandRed,
-                  ),
+                ListTile(
+                  leading: const Icon(Icons.delete, color: Colors.red),
+                  title: const Text('Hapus Produk'),
+                  onTap: () async {
+                    Navigator.pop(ctx);
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (c) => AlertDialog(
+                        title: const Text('Hapus Produk?'),
+                        content: Text('Yakin ingin menghapus ${product.name}?'),
+                        actions: [
+                          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Batal')),
+                          TextButton(
+                            onPressed: () => Navigator.pop(c, true), 
+                            child: const Text('Hapus', style: TextStyle(color: Colors.red))
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (confirm == true) {
+                      try {
+                        await ApiService().deleteProduct(product.publicId);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('✅ Produk dihapus')),
+                          );
+                          onRefresh();
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('❌ Gagal hapus: $e')),
+                          );
+                        }
+                      }
+                    }
+                  },
                 ),
               ],
             ),
           ),
-        ],
+        );
+      },
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: line),
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                width: 64,
+                height: 64,
+                color: brandRed.withValues(alpha: 0.08),
+                child: imageUrl != null
+                    ? Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Icon(
+                          Icons.image_outlined,
+                          color: brandRed,
+                        ),
+                      )
+                    : const Icon(Icons.image_outlined, color: brandRed),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    product.name,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    product.categoryName,
+                    style: const TextStyle(fontSize: 11, color: muted),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Rp ${product.minPrice}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: brandRed,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
