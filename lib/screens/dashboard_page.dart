@@ -41,7 +41,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
       // 2. Fetch products FILTERED by business
       final products = await ApiService().getProducts(
-        businessSlug: business.slug,
+        business: business.slug,
         limit: 100,
       );
 
@@ -483,3 +483,4 @@ class _InsightCard extends StatelessWidget {
     );
   }
 }
+

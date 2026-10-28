@@ -65,7 +65,7 @@ class ApiService {
   Future<List<Product>> getProducts({
     String? query,
     String? category,
-    String? businessSlug,
+    String? business,
     String? status,
     int page = 1,
     int limit = 100, // Diubah default ke 100 agar semua produk muncul
@@ -78,8 +78,8 @@ class ApiService {
     if (category != null && category.trim().isNotEmpty) {
       params['category'] = category.trim();
     }
-    if (businessSlug != null && businessSlug.trim().isNotEmpty) {
-      params['business'] = businessSlug.trim();
+    if (business != null && business.trim().isNotEmpty) {
+      params['business'] = business.trim();
     }
     if (status != null && status.trim().isNotEmpty) {
       params['status'] = status.trim();
@@ -420,3 +420,4 @@ class ApiService {
     }
   }
 }
+

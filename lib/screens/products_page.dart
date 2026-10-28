@@ -47,7 +47,7 @@ class _ProductsPageState extends State<ProductsPage> {
 
       final result = await ApiService().getProducts(
         limit: 100,
-        businessSlug: slug,
+        business: slug,
       );
 
       if (!mounted) return;
@@ -375,3 +375,4 @@ class _ProductTile extends StatelessWidget {
     );
   }
 }
+
