@@ -47,18 +47,37 @@ class ApiService {
       final response = await http
           .get(uri, headers: headers)
           .timeout(const Duration(milliseconds: ApiConfig.kTimeoutMs));
+      
+      // Cek status code dulu
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiException(
-          'API mengembalikan HTTP ${response.statusCode}',
-          statusCode: response.statusCode,
-        );
+        // Coba parsing error message dari body
+        String errorMsg = 'API mengembalikan HTTP ${response.statusCode}';
+        try {
+          final errJson = jsonDecode(response.body);
+          if (errJson is Map && errJson['error'] != null) {
+            errorMsg = errJson['error'].toString();
+          } else if (errJson is Map && errJson['message'] != null) {
+            errorMsg = errJson['message'].toString();
+          }
+        } catch (_) {}
+        throw ApiException(errorMsg, statusCode: response.statusCode);
       }
-      return jsonDecode(response.body) as Map<String, dynamic>;
+      
+      // Parsing JSON
+      try {
+        final decoded = jsonDecode(response.body);
+        if (decoded is! Map<String, dynamic>) {
+          throw ApiException('Format response tidak valid');
+        }
+        return decoded;
+      } catch (e) {
+        throw ApiException('Gagal parsing response: ${e.toString()}');
+      }
     } on TimeoutException {
       throw ApiException('Permintaan timeout. Periksa koneksi.');
     } catch (e) {
       if (e is ApiException) rethrow;
-      throw ApiException('Tidak dapat terhubung ke server.');
+      throw ApiException('Tidak dapat terhubung ke server: ${e.toString()}');
     }
   }
 
@@ -68,7 +87,7 @@ class ApiService {
     String? business,
     String? status,
     int page = 1,
-    int limit = 100, // Diubah default ke 100 agar semua produk muncul
+    int limit = 100,
   }) async {
     final params = <String, String>{
       'page': page.toString(),
@@ -108,7 +127,8 @@ class ApiService {
     final json = await _get(ApiConfig.kBusinessMe);
     final data = json['data'];
     if (data is! Map<String, dynamic>) {
-      throw ApiException('Format data business tidak valid');
+      final errMsg = json['error']?.toString() ?? 'Format data business tidak valid';
+      throw ApiException(errMsg);
     }
     return Business.fromJson(data);
   }
@@ -420,4 +440,3 @@ class ApiService {
     }
   }
 }
-

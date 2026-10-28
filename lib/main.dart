@@ -21,7 +21,7 @@ class NusadhipaBusinessApp extends StatelessWidget {
       title: 'NUSA-DHIPA Business',
       debugShowCheckedModeBanner: false,
       theme: buildNusadhipaTheme(),
-      home: const SplashScreen(),
+      home: SplashScreen(isLoggedIn: isLoggedIn), // <--- Passing isLoggedIn
     );
   }
 }
