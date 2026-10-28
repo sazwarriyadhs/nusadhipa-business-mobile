@@ -65,9 +65,9 @@ class _InvoicePreviewPageState extends State<InvoicePreviewPage> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal share: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Gagal share: $e")));
     }
   }
 
@@ -80,9 +80,9 @@ class _InvoicePreviewPageState extends State<InvoicePreviewPage> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal print: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Gagal print: $e")));
     }
   }
 
@@ -135,30 +135,30 @@ class _InvoicePreviewPageState extends State<InvoicePreviewPage> {
               ),
             )
           : error != null
-              ? _ErrorState(message: error!, onRetry: _generate)
-              : Column(
-                  children: [
-                    Expanded(
-                      child: PdfPreview(
-                        build: (_) async => pdfBytes!,
-                        canChangeOrientation: false,
-                        canChangePageFormat: false,
-                        canDebug: false,
-                        allowSharing: false,
-                        allowPrinting: false,
-                        loadingWidget: const Center(
-                          child: CircularProgressIndicator(color: brandRed),
-                        ),
-                        padding: const EdgeInsets.all(12),
-                      ),
+          ? _ErrorState(message: error!, onRetry: _generate)
+          : Column(
+              children: [
+                Expanded(
+                  child: PdfPreview(
+                    build: (_) async => pdfBytes!,
+                    canChangeOrientation: false,
+                    canChangePageFormat: false,
+                    canDebug: false,
+                    allowSharing: false,
+                    allowPrinting: false,
+                    loadingWidget: const Center(
+                      child: CircularProgressIndicator(color: brandRed),
                     ),
-                    _ActionBar(
-                      onShare: _share,
-                      onPrint: _print,
-                      onRegenerate: _generate,
-                    ),
-                  ],
+                    padding: const EdgeInsets.all(12),
+                  ),
                 ),
+                _ActionBar(
+                  onShare: _share,
+                  onPrint: _print,
+                  onRegenerate: _generate,
+                ),
+              ],
+            ),
     );
   }
 }
@@ -232,8 +232,11 @@ class _ActionBar extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.download_rounded,
-                              color: Colors.white, size: 18),
+                          Icon(
+                            Icons.download_rounded,
+                            color: Colors.white,
+                            size: 18,
+                          ),
                           SizedBox(width: 6),
                           Text(
                             "Download & Share",
@@ -278,14 +281,16 @@ class _ErrorState extends StatelessWidget {
                 color: brandRed.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.error_outline,
-                  color: brandRed, size: 32),
+              child: const Icon(Icons.error_outline, color: brandRed, size: 32),
             ),
             const SizedBox(height: 16),
             const Text(
               "Gagal membuat invoice",
               style: TextStyle(
-                  fontWeight: FontWeight.w900, fontSize: 16, color: ink),
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+                color: ink,
+              ),
             ),
             const SizedBox(height: 8),
             Text(

@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 // ============================================================
 
 // Primary — Merah Nusantara (lebih cerah)
-const brandRed = Color(0xFFE5232E);   // ← dari referensi
+const brandRed = Color(0xFFE5232E); // ← dari referensi
 const deepRed = Color(0xFF98182A);
-const crimson = Color(0xFFFF3B47);    // merah lebih cerah untuk gradient
+const crimson = Color(0xFFFF3B47); // merah lebih cerah untuk gradient
 
 // Gold — aksen kemewahan
 const gold = Color(0xFFD4A24C);
@@ -72,9 +72,7 @@ ThemeData buildNusadhipaTheme() {
       style: FilledButton.styleFrom(
         backgroundColor: brandRed,
         foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         textStyle: const TextStyle(
           fontWeight: FontWeight.w800,

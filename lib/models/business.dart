@@ -10,10 +10,10 @@ class BusinessKbli {
   });
 
   factory BusinessKbli.fromJson(Map<String, dynamic> json) => BusinessKbli(
-        code: (json['code'] ?? '').toString(),
-        name: (json['name'] ?? '').toString(),
-        isPrimary: json['is_primary'] == 1 || json['is_primary'] == true,
-      );
+    code: (json['code'] ?? '').toString(),
+    name: (json['name'] ?? '').toString(),
+    isPrimary: json['is_primary'] == 1 || json['is_primary'] == true,
+  );
 }
 
 class Business {
@@ -90,7 +90,8 @@ class Business {
       taxNumber: json['tax_number']?.toString(),
       kbliCode: json['kbli_code']?.toString(),
       kbliName: json['kbli_name']?.toString(),
-      verificationStatus: (json['verification_status'] ?? 'unverified').toString(),
+      verificationStatus: (json['verification_status'] ?? 'unverified')
+          .toString(),
       status: (json['status'] ?? 'draft').toString(),
       kbliList: kbliList,
     );

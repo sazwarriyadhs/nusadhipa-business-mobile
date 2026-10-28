@@ -16,7 +16,7 @@ class _AddProductPageState extends State<AddProductPage> {
   final _priceCtrl = TextEditingController();
   final _stockCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
-  
+
   File? _imageFile;
   bool _isLoading = false;
 
@@ -57,9 +57,9 @@ class _AddProductPageState extends State<AddProductPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ Gagal: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('❌ Gagal: ${e.toString()}')));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -69,7 +69,10 @@ class _AddProductPageState extends State<AddProductPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Tambah Produk'), backgroundColor: Colors.red),
+      appBar: AppBar(
+        title: const Text('Tambah Produk'),
+        backgroundColor: Colors.red,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Form(
@@ -95,9 +98,16 @@ class _AddProductPageState extends State<AddProductPage> {
                       : const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.add_a_photo, size: 40, color: Colors.grey),
+                            Icon(
+                              Icons.add_a_photo,
+                              size: 40,
+                              color: Colors.grey,
+                            ),
                             SizedBox(height: 8),
-                            Text('Pilih Gambar Produk', style: TextStyle(color: Colors.grey)),
+                            Text(
+                              'Pilih Gambar Produk',
+                              style: TextStyle(color: Colors.grey),
+                            ),
                           ],
                         ),
                 ),
@@ -105,28 +115,40 @@ class _AddProductPageState extends State<AddProductPage> {
               const SizedBox(height: 20),
               TextFormField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(labelText: 'Nama Produk', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'Nama Produk',
+                  border: OutlineInputBorder(),
+                ),
                 validator: (v) => v!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _priceCtrl,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Harga (Rp)', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'Harga (Rp)',
+                  border: OutlineInputBorder(),
+                ),
                 validator: (v) => v!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _stockCtrl,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Stok', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'Stok',
+                  border: OutlineInputBorder(),
+                ),
                 validator: (v) => v!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _descCtrl,
                 maxLines: 3,
-                decoration: const InputDecoration(labelText: 'Deskripsi (Opsional)', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'Deskripsi (Opsional)',
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 24),
               ElevatedButton(
@@ -136,9 +158,15 @@ class _AddProductPageState extends State<AddProductPage> {
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: _isLoading 
+                child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Simpan Produk', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    : const Text(
+                        'Simpan Produk',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ),
             ],
           ),

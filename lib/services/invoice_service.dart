@@ -24,9 +24,7 @@ class InvoiceService {
       documentDate: PdfService.formatDate(DateTime.now()),
     );
 
-    final footer = await PdfService.buildFooter(
-      documentTitle: "Invoice",
-    );
+    final footer = await PdfService.buildFooter(documentTitle: "Invoice");
 
     final address = order.addressMap;
 
@@ -117,9 +115,7 @@ class InvoiceService {
           // ===== TABEL ITEMS =====
           pw.Container(
             decoration: pw.BoxDecoration(
-              border: pw.Border.all(
-                color: const PdfColor.fromInt(0xFFECECF0),
-              ),
+              border: pw.Border.all(color: const PdfColor.fromInt(0xFFECECF0)),
               borderRadius: pw.BorderRadius.circular(6),
             ),
             child: pw.Column(
@@ -146,10 +142,7 @@ class InvoiceService {
                     children: [
                       pw.SizedBox(
                         width: 24,
-                        child: pw.Text(
-                          "No",
-                          style: _tableHeaderStyle(),
-                        ),
+                        child: pw.Text("No", style: _tableHeaderStyle()),
                       ),
                       pw.Expanded(
                         flex: 4,
@@ -274,9 +267,7 @@ class InvoiceService {
                 pw.Container(
                   decoration: const pw.BoxDecoration(
                     border: pw.Border(
-                      top: pw.BorderSide(
-                        color: PdfColor.fromInt(0xFFECECF0),
-                      ),
+                      top: pw.BorderSide(color: PdfColor.fromInt(0xFFECECF0)),
                     ),
                   ),
                   padding: const pw.EdgeInsets.all(12),
@@ -313,10 +304,7 @@ class InvoiceService {
 
           // ===== TERBILANG =====
           pw.Container(
-            padding: const pw.EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 8,
-            ),
+            padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: pw.BoxDecoration(
               color: const PdfColor.fromInt(0xFFFFF8E1),
               borderRadius: pw.BorderRadius.circular(6),
@@ -417,10 +405,7 @@ class InvoiceService {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.center,
                   children: [
-                    pw.Text(
-                      "Hormat kami,",
-                      style: pw.TextStyle(fontSize: 9),
-                    ),
+                    pw.Text("Hormat kami,", style: pw.TextStyle(fontSize: 9)),
                     pw.SizedBox(height: 50),
                     pw.Container(
                       width: 160,
@@ -493,10 +478,10 @@ class InvoiceService {
   }
 
   static pw.TextStyle _tableHeaderStyle() => pw.TextStyle(
-        fontSize: 9,
-        fontWeight: pw.FontWeight.bold,
-        color: PdfColors.white,
-      );
+    fontSize: 9,
+    fontWeight: pw.FontWeight.bold,
+    color: PdfColors.white,
+  );
 
   static pw.Widget _infoRow(String label, String value) {
     return pw.Padding(
@@ -513,10 +498,7 @@ class InvoiceService {
           ),
           pw.Text(
             value,
-            style: pw.TextStyle(
-              fontSize: 9,
-              fontWeight: pw.FontWeight.bold,
-            ),
+            style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold),
           ),
         ],
       ),
@@ -538,8 +520,7 @@ class InvoiceService {
             label,
             style: pw.TextStyle(
               fontSize: big ? 12 : 9,
-              fontWeight:
-                  bold ? pw.FontWeight.bold : pw.FontWeight.normal,
+              fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
               color: big
                   ? const PdfColor.fromInt(0xFFE5232E)
                   : const PdfColor.fromInt(0xFF19191D),
@@ -549,8 +530,7 @@ class InvoiceService {
             value,
             style: pw.TextStyle(
               fontSize: big ? 12 : 9,
-              fontWeight:
-                  bold ? pw.FontWeight.bold : pw.FontWeight.normal,
+              fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
               color: big
                   ? const PdfColor.fromInt(0xFFE5232E)
                   : const PdfColor.fromInt(0xFF19191D),

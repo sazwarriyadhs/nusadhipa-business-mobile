@@ -17,7 +17,8 @@ class DeliveryConfig {
     if (distanceKm <= freeShippingRadiusKm) {
       return 0; // Gratis
     }
-    return baseShippingCost + (distanceKm - freeShippingRadiusKm) * shippingCostPerKm;
+    return baseShippingCost +
+        (distanceKm - freeShippingRadiusKm) * shippingCostPerKm;
   }
 
   /// Cek apakah alamat masuk radius gratis

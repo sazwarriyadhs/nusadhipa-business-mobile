@@ -46,10 +46,7 @@ class AuthService {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
           },
-          body: jsonEncode({
-            'email': email.trim(),
-            'password': password,
-          }),
+          body: jsonEncode({'email': email.trim(), 'password': password}),
         )
         .timeout(const Duration(milliseconds: ApiConfig.kTimeoutMs));
 

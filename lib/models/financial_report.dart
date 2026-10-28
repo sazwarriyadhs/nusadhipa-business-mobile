@@ -14,12 +14,12 @@ class ReportSummary {
   });
 
   factory ReportSummary.fromJson(Map<String, dynamic> json) => ReportSummary(
-        totalOrders: (json['total_orders'] as num?)?.toInt() ?? 0,
-        totalSales: _num(json['total_sales']),
-        totalDiscount: _num(json['total_discount']),
-        totalShipping: _num(json['total_shipping']),
-        totalRevenue: _num(json['total_revenue']),
-      );
+    totalOrders: (json['total_orders'] as num?)?.toInt() ?? 0,
+    totalSales: _num(json['total_sales']),
+    totalDiscount: _num(json['total_discount']),
+    totalShipping: _num(json['total_shipping']),
+    totalRevenue: _num(json['total_revenue']),
+  );
 }
 
 class StatusBreakdown {
@@ -77,15 +77,14 @@ class TransactionRow {
     required this.itemsCount,
   });
 
-  factory TransactionRow.fromJson(Map<String, dynamic> json) =>
-      TransactionRow(
-        orderNumber: (json['order_number'] ?? '').toString(),
-        status: (json['status'] ?? '').toString(),
-        placedAt: _parseDate(json['placed_at']),
-        grandTotal: _num(json['grand_total']),
-        buyerName: json['buyer_name']?.toString(),
-        itemsCount: (json['items_count'] as num?)?.toInt() ?? 0,
-      );
+  factory TransactionRow.fromJson(Map<String, dynamic> json) => TransactionRow(
+    orderNumber: (json['order_number'] ?? '').toString(),
+    status: (json['status'] ?? '').toString(),
+    placedAt: _parseDate(json['placed_at']),
+    grandTotal: _num(json['grand_total']),
+    buyerName: json['buyer_name']?.toString(),
+    itemsCount: (json['items_count'] as num?)?.toInt() ?? 0,
+  );
 }
 
 class TopProduct {
@@ -102,11 +101,11 @@ class TopProduct {
   });
 
   factory TopProduct.fromJson(Map<String, dynamic> json) => TopProduct(
-        productName: (json['product_name'] ?? '').toString(),
-        variantName: (json['variant_name'] ?? '').toString(),
-        totalQty: _num(json['total_qty']),
-        totalSales: _num(json['total_sales']),
-      );
+    productName: (json['product_name'] ?? '').toString(),
+    variantName: (json['variant_name'] ?? '').toString(),
+    totalQty: _num(json['total_qty']),
+    totalSales: _num(json['total_sales']),
+  );
 }
 
 class DailySale {
@@ -117,10 +116,10 @@ class DailySale {
   DailySale({this.date, required this.orders, required this.total});
 
   factory DailySale.fromJson(Map<String, dynamic> json) => DailySale(
-        date: _parseDate(json['date']),
-        orders: (json['orders'] as num?)?.toInt() ?? 0,
-        total: _num(json['total']),
-      );
+    date: _parseDate(json['date']),
+    orders: (json['orders'] as num?)?.toInt() ?? 0,
+    total: _num(json['total']),
+  );
 }
 
 class FinancialReport {
@@ -144,7 +143,7 @@ class FinancialReport {
 
   factory FinancialReport.fromJson(Map<String, dynamic> json) {
     final period = json['period'] as Map<String, dynamic>? ?? {};
-    
+
     return FinancialReport(
       from: _parseDate(period['from']),
       to: _parseDate(period['to']),

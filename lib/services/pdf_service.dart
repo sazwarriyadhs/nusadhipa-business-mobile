@@ -38,8 +38,7 @@ class PdfService {
   /// Load logo platform NUSA-DHIPA
   static Future<Uint8List?> _loadPlatformLogo() async {
     try {
-      final bytes =
-          await rootBundle.load("assets/branding/logo_nusadhipa.png");
+      final bytes = await rootBundle.load("assets/branding/logo_nusadhipa.png");
       return bytes.buffer.asUint8List();
     } catch (_) {
       return null;
@@ -52,8 +51,18 @@ class PdfService {
     if (n == 0) return "nol rupiah";
 
     const satuan = [
-      "", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh",
-      "delapan", "sembilan", "sepuluh", "sebelas"
+      "",
+      "satu",
+      "dua",
+      "tiga",
+      "empat",
+      "lima",
+      "enam",
+      "tujuh",
+      "delapan",
+      "sembilan",
+      "sepuluh",
+      "sebelas",
     ];
 
     String convert(int x) {
@@ -61,14 +70,22 @@ class PdfService {
       if (x < 20) return "${convert(x - 10)} belas";
       if (x < 100) return "${convert(x ~/ 10)} puluh ${convert(x % 10)}".trim();
       if (x < 200) return "seratus ${convert(x - 100)}".trim();
-      if (x < 1000) return "${convert(x ~/ 100)} ratus ${convert(x % 100)}".trim();
-      if (x < 2000) return "seribu ${convert(x - 1000)}".trim();
-      if (x < 1000000) return "${convert(x ~/ 1000)} ribu ${convert(x % 1000)}".trim();
-      if (x < 1000000000) return "${convert(x ~/ 1000000)} juta ${convert(x % 1000000)}".trim();
-      if (x < 1000000000000) {
-        return "${convert(x ~/ 1000000000)} miliar ${convert(x % 1000000000)}".trim();
+      if (x < 1000) {
+        return "${convert(x ~/ 100)} ratus ${convert(x % 100)}".trim();
       }
-      return "${convert(x ~/ 1000000000000)} triliun ${convert(x % 1000000000000)}".trim();
+      if (x < 2000) return "seribu ${convert(x - 1000)}".trim();
+      if (x < 1000000) {
+        return "${convert(x ~/ 1000)} ribu ${convert(x % 1000)}".trim();
+      }
+      if (x < 1000000000) {
+        return "${convert(x ~/ 1000000)} juta ${convert(x % 1000000)}".trim();
+      }
+      if (x < 1000000000000) {
+        return "${convert(x ~/ 1000000000)} miliar ${convert(x % 1000000000)}"
+            .trim();
+      }
+      return "${convert(x ~/ 1000000000000)} triliun ${convert(x % 1000000000000)}"
+          .trim();
     }
 
     final kata = convert(n).replaceAll(RegExp(r"\s+"), " ").trim();
@@ -193,8 +210,10 @@ class PdfService {
               ),
               pw.SizedBox(height: 6),
               pw.Container(
-                padding:
-                    const pw.EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const pw.EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: pw.BoxDecoration(
                   color: const PdfColor.fromInt(0xFFFFF0F1),
                   borderRadius: pw.BorderRadius.circular(6),
@@ -224,9 +243,7 @@ class PdfService {
   }
 
   /// Build footer PDF — NUSA-DHIPA branding
-  static Future<pw.Widget> buildFooter({
-    required String documentTitle,
-  }) async {
+  static Future<pw.Widget> buildFooter({required String documentTitle}) async {
     final platformLogo = await _loadPlatformLogo();
 
     return pw.Container(
@@ -278,10 +295,7 @@ class PdfService {
     required Uint8List bytes,
     required String filename,
   }) async {
-    await Printing.layoutPdf(
-      onLayout: (_) async => bytes,
-      name: filename,
-    );
+    await Printing.layoutPdf(onLayout: (_) async => bytes, name: filename);
   }
 
   /// Share PDF via WhatsApp/email/dll
@@ -294,9 +308,6 @@ class PdfService {
     final file = File("${dir.path}/$filename");
     await file.writeAsBytes(bytes);
 
-    await Printing.sharePdf(
-      bytes: bytes,
-      filename: filename,
-    );
+    await Printing.sharePdf(bytes: bytes, filename: filename);
   }
 }

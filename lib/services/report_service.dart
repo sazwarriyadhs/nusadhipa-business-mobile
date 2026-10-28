@@ -15,14 +15,16 @@ class ReportService {
     final doc = pw.Document(
       title: "Laporan Keuangan",
       author: business?.legalName ?? "NUSA-DHIPA",
-      subject: "Laporan Keuangan Periode ${_formatDate(report.from)} - ${_formatDate(report.to)}",
+      subject:
+          "Laporan Keuangan Periode ${_formatDate(report.from)} - ${_formatDate(report.to)}",
     );
 
     final header = await PdfService.buildHeader(
       business: business,
       documentTitle: "Laporan Keuangan",
       documentNumber: "RPT-${DateFormat('yyyyMMdd').format(DateTime.now())}",
-      documentDate: "Periode: ${_formatDate(report.from)} - ${_formatDate(report.to)}",
+      documentDate:
+          "Periode: ${_formatDate(report.from)} - ${_formatDate(report.to)}",
     );
 
     final footer = await PdfService.buildFooter(
@@ -120,7 +122,8 @@ class ReportService {
                 pw.Container(
                   color: const PdfColor.fromInt(0xFFF8FAFC),
                   padding: const pw.EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 8,
+                    horizontal: 12,
+                    vertical: 8,
                   ),
                   child: pw.Row(
                     children: [
@@ -129,11 +132,19 @@ class ReportService {
                         child: pw.Text("Status", style: _headerStyle()),
                       ),
                       pw.Expanded(
-                        child: pw.Text("Jumlah", style: _headerStyle(), textAlign: pw.TextAlign.right),
+                        child: pw.Text(
+                          "Jumlah",
+                          style: _headerStyle(),
+                          textAlign: pw.TextAlign.right,
+                        ),
                       ),
                       pw.Expanded(
                         flex: 2,
-                        child: pw.Text("Total", style: _headerStyle(), textAlign: pw.TextAlign.right),
+                        child: pw.Text(
+                          "Total",
+                          style: _headerStyle(),
+                          textAlign: pw.TextAlign.right,
+                        ),
                       ),
                     ],
                   ),
@@ -143,15 +154,21 @@ class ReportService {
                   final s = entry.value;
                   final isEven = idx % 2 == 0;
                   return pw.Container(
-                    color: isEven ? const PdfColor.fromInt(0xFFFAFAFB) : PdfColors.white,
+                    color: isEven
+                        ? const PdfColor.fromInt(0xFFFAFAFB)
+                        : PdfColors.white,
                     padding: const pw.EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 8,
+                      horizontal: 12,
+                      vertical: 8,
                     ),
                     child: pw.Row(
                       children: [
                         pw.Expanded(
                           flex: 2,
-                          child: pw.Text(s.label, style: pw.TextStyle(fontSize: 9)),
+                          child: pw.Text(
+                            s.label,
+                            style: pw.TextStyle(fontSize: 9),
+                          ),
                         ),
                         pw.Expanded(
                           child: pw.Text(
@@ -164,7 +181,10 @@ class ReportService {
                           flex: 2,
                           child: pw.Text(
                             PdfService.formatRupiah(s.total),
-                            style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold),
+                            style: pw.TextStyle(
+                              fontSize: 9,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
                             textAlign: pw.TextAlign.right,
                           ),
                         ),
@@ -184,7 +204,9 @@ class ReportService {
             pw.SizedBox(height: 10),
             pw.Container(
               decoration: pw.BoxDecoration(
-                border: pw.Border.all(color: const PdfColor.fromInt(0xFFECECF0)),
+                border: pw.Border.all(
+                  color: const PdfColor.fromInt(0xFFECECF0),
+                ),
                 borderRadius: pw.BorderRadius.circular(6),
               ),
               child: pw.Column(
@@ -192,7 +214,8 @@ class ReportService {
                   pw.Container(
                     color: const PdfColor.fromInt(0xFFF8FAFC),
                     padding: const pw.EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 8,
+                      horizontal: 12,
+                      vertical: 8,
                     ),
                     child: pw.Row(
                       children: [
@@ -205,11 +228,19 @@ class ReportService {
                           child: pw.Text("Produk", style: _headerStyle()),
                         ),
                         pw.Expanded(
-                          child: pw.Text("Qty", style: _headerStyle(), textAlign: pw.TextAlign.right),
+                          child: pw.Text(
+                            "Qty",
+                            style: _headerStyle(),
+                            textAlign: pw.TextAlign.right,
+                          ),
                         ),
                         pw.Expanded(
                           flex: 2,
-                          child: pw.Text("Penjualan", style: _headerStyle(), textAlign: pw.TextAlign.right),
+                          child: pw.Text(
+                            "Penjualan",
+                            style: _headerStyle(),
+                            textAlign: pw.TextAlign.right,
+                          ),
                         ),
                       ],
                     ),
@@ -219,15 +250,21 @@ class ReportService {
                     final p = entry.value;
                     final isEven = idx % 2 == 0;
                     return pw.Container(
-                      color: isEven ? const PdfColor.fromInt(0xFFFAFAFB) : PdfColors.white,
+                      color: isEven
+                          ? const PdfColor.fromInt(0xFFFAFAFB)
+                          : PdfColors.white,
                       padding: const pw.EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 8,
+                        horizontal: 12,
+                        vertical: 8,
                       ),
                       child: pw.Row(
                         children: [
                           pw.SizedBox(
                             width: 24,
-                            child: pw.Text("$idx", style: pw.TextStyle(fontSize: 9)),
+                            child: pw.Text(
+                              "$idx",
+                              style: pw.TextStyle(fontSize: 9),
+                            ),
                           ),
                           pw.Expanded(
                             flex: 4,
@@ -236,7 +273,10 @@ class ReportService {
                               children: [
                                 pw.Text(
                                   p.productName,
-                                  style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold),
+                                  style: pw.TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: pw.FontWeight.bold,
+                                  ),
                                 ),
                                 pw.Text(
                                   p.variantName,
@@ -259,7 +299,10 @@ class ReportService {
                             flex: 2,
                             child: pw.Text(
                               PdfService.formatRupiah(p.totalSales),
-                              style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold),
+                              style: pw.TextStyle(
+                                fontSize: 9,
+                                fontWeight: pw.FontWeight.bold,
+                              ),
                               textAlign: pw.TextAlign.right,
                             ),
                           ),
@@ -286,7 +329,8 @@ class ReportService {
                 pw.Container(
                   color: const PdfColor.fromInt(0xFFF8FAFC),
                   padding: const pw.EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 8,
+                    horizontal: 12,
+                    vertical: 8,
                   ),
                   child: pw.Row(
                     children: [
@@ -302,11 +346,19 @@ class ReportService {
                         child: pw.Text("Tanggal", style: _headerStyle()),
                       ),
                       pw.Expanded(
-                        child: pw.Text("Item", style: _headerStyle(), textAlign: pw.TextAlign.right),
+                        child: pw.Text(
+                          "Item",
+                          style: _headerStyle(),
+                          textAlign: pw.TextAlign.right,
+                        ),
                       ),
                       pw.Expanded(
                         flex: 2,
-                        child: pw.Text("Total", style: _headerStyle(), textAlign: pw.TextAlign.right),
+                        child: pw.Text(
+                          "Total",
+                          style: _headerStyle(),
+                          textAlign: pw.TextAlign.right,
+                        ),
                       ),
                     ],
                   ),
@@ -316,9 +368,12 @@ class ReportService {
                   final t = entry.value;
                   final isEven = idx % 2 == 0;
                   return pw.Container(
-                    color: isEven ? const PdfColor.fromInt(0xFFFAFAFB) : PdfColors.white,
+                    color: isEven
+                        ? const PdfColor.fromInt(0xFFFAFAFB)
+                        : PdfColors.white,
                     padding: const pw.EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 8,
+                      horizontal: 12,
+                      vertical: 8,
                     ),
                     child: pw.Row(
                       children: [
@@ -326,7 +381,10 @@ class ReportService {
                           flex: 2,
                           child: pw.Text(
                             t.orderNumber,
-                            style: pw.TextStyle(fontSize: 8.5, fontWeight: pw.FontWeight.bold),
+                            style: pw.TextStyle(
+                              fontSize: 8.5,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
                           ),
                         ),
                         pw.Expanded(
@@ -353,7 +411,10 @@ class ReportService {
                           flex: 2,
                           child: pw.Text(
                             PdfService.formatRupiah(t.grandTotal),
-                            style: pw.TextStyle(fontSize: 8.5, fontWeight: pw.FontWeight.bold),
+                            style: pw.TextStyle(
+                              fontSize: 8.5,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
                             textAlign: pw.TextAlign.right,
                           ),
                         ),
@@ -396,19 +457,16 @@ class ReportService {
   }
 
   static pw.TextStyle _headerStyle() => pw.TextStyle(
-        fontSize: 9,
-        fontWeight: pw.FontWeight.bold,
-        color: const PdfColor.fromInt(0xFF19191D),
-      );
+    fontSize: 9,
+    fontWeight: pw.FontWeight.bold,
+    color: const PdfColor.fromInt(0xFF19191D),
+  );
 
   static pw.Widget _sectionTitle(String title) {
     return pw.Container(
       decoration: const pw.BoxDecoration(
         border: pw.Border(
-          left: pw.BorderSide(
-            color: PdfColor.fromInt(0xFFE5232E),
-            width: 4,
-          ),
+          left: pw.BorderSide(color: PdfColor.fromInt(0xFFE5232E), width: 4),
         ),
       ),
       padding: const pw.EdgeInsets.only(left: 10),
@@ -424,7 +482,12 @@ class ReportService {
     );
   }
 
-  static pw.Widget _summaryBox(String label, String value, {bool big = false, bool small = false}) {
+  static pw.Widget _summaryBox(
+    String label,
+    String value, {
+    bool big = false,
+    bool small = false,
+  }) {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [

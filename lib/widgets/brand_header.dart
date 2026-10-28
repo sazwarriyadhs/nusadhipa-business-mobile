@@ -1,103 +1,10 @@
 import 'package:flutter/material.dart';
 import '../config/theme.dart';
+import '../config/business_type.dart';
 import '../models/business.dart';
 import '../services/api_service.dart';
+import '../screens/location_map_page.dart';
 import 'demo_message.dart';
-
-// ============================================================
-// KBLI → Kategori Cover Image
-// ============================================================
-const Map<String, String> kbliToCover = {
-  // 01 - Makanan & Minuman
-  "56101": "01-makanan-minuman",
-  "56102": "01-makanan-minuman",
-  "56201": "01-makanan-minuman",
-  
-  // 03 - Peternakan, Daging, Perikanan
-  "46322": "03-peternakan-daging-perikanan",
-  "46325": "03-peternakan-daging-perikanan",
-  "46205": "03-peternakan-daging-perikanan",
-  "46311": "03-peternakan-daging-perikanan",
-  "46319": "03-peternakan-daging-perikanan",
-  "47211": "03-peternakan-daging-perikanan",
-  "47212": "03-peternakan-daging-perikanan",
-  
-  // 04 - Petfood & Kebutuhan Hewan
-  "47731": "04-petfood-kebutuhan-hewan",
-  "47732": "04-petfood-kebutuhan-hewan",
-  "47733": "04-petfood-kebutuhan-hewan",
-  
-  // 05 - Fashion & Aksesori
-  "14111": "05-fashion-aksesori",
-  "14112": "05-fashion-aksesori",
-  "47511": "05-fashion-aksesori",
-  "47512": "05-fashion-aksesori",
-  "47711": "05-fashion-aksesori",
-  
-  // 06 - Kerajinan & Produk Kreatif
-  "16101": "06-kerajinan-produk-kreatif",
-  "16291": "06-kerajinan-produk-kreatif",
-  "32901": "06-kerajinan-produk-kreatif",
-  
-  // 07 - Rumah Tangga & Perlengkapan
-  "47531": "07-rumah-tangga-perlengkapan",
-  "47532": "07-rumah-tangga-perlengkapan",
-  "47781": "07-rumah-tangga-perlengkapan",
-  
-  // 08 - Kecantikan & Perawatan Diri
-  "47721": "08-kecantikan-perawatan-diri",
-  "47722": "08-kecantikan-perawatan-diri",
-  "96011": "08-kecantikan-perawatan-diri",
-  
-  // 09 - Tanaman, Bunga & Florist
-  "47761": "09-tanaman-bunga-florist",
-  "47762": "09-tanaman-bunga-florist",
-  "01301": "09-tanaman-bunga-florist",
-  "01309": "09-tanaman-bunga-florist",
-  
-  // 10 - Elektronik & Peralatan
-  "47411": "10-elektronik-peralatan",
-  "47412": "10-elektronik-peralatan",
-  "47413": "10-elektronik-peralatan",
-  
-  // 11 - Jasa & Layanan Bisnis
-  "62010": "11-jasa-layanan-bisnis",
-  "62020": "11-jasa-layanan-bisnis",
-  "62900": "11-jasa-layanan-bisnis",
-  "70201": "11-jasa-layanan-bisnis",
-  "73100": "11-jasa-layanan-bisnis",
-  
-  // 12 - Industri, Grosir & B2B
-  "46900": "12-industri-grosir-b2b",
-};
-
-String getCoverImageForBusiness(Business? business) {
-  if (business == null) return "01-makanan-minuman";
-  
-  // 1. Cek dari kbli_code (kalau ada)
-  final kbli = business.kbliCode;
-  if (kbli != null && kbliToCover.containsKey(kbli)) {
-    return kbliToCover[kbli]!;
-  }
-  
-  // 2. Fallback: dari nama bisnis
-  final name = business.businessName.toLowerCase();
-  if (name.contains("bunga") || name.contains("florist")) {
-    return "09-tanaman-bunga-florist";
-  }
-  if (name.contains("ayam") || name.contains("daging") || name.contains("ikan") || name.contains("unggas")) {
-    return "03-peternakan-daging-perikanan";
-  }
-  if (name.contains("kucing") || name.contains("anjing") || name.contains("pet")) {
-    return "04-petfood-kebutuhan-hewan";
-  }
-  if (name.contains("digital") || name.contains("media") || name.contains("teknologi") || name.contains("komunika")) {
-    return "11-jasa-layanan-bisnis";
-  }
-  
-  // 3. Default
-  return "01-makanan-minuman";
-}
 
 class BrandHeader extends StatefulWidget {
   const BrandHeader({super.key});
@@ -132,19 +39,21 @@ class _BrandHeaderState extends State<BrandHeader> {
 
   @override
   Widget build(BuildContext context) {
+    final typeInfo = resolveBusinessType(business);
+
     return Column(
       children: [
-        // ===== TOP BAR PUTIH =====
         const _WhiteTopHeader(),
-
-        // ===== COVER IMAGE =====
-        _CoverImage(business: business),
-
-        // ===== TENANT CARD (rapih, di bawah cover) =====
+        _CoverHero(
+          business: business,
+          typeInfo: typeInfo,
+          loading: loading,
+        ),
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
           child: _TenantCard(
             business: business,
+            typeInfo: typeInfo,
             loading: loading,
           ),
         ),
@@ -194,8 +103,8 @@ class _WhiteTopHeader extends StatelessWidget {
                 ),
                 child: IconButton(
                   padding: EdgeInsets.zero,
-                  onPressed: () => demoMessage(
-                      context, 'Notifikasi demo belum terhubung.'),
+                  onPressed: () =>
+                      demoMessage(context, 'Notifikasi demo belum terhubung.'),
                   icon: const Icon(
                     Icons.notifications_none_rounded,
                     color: ink,
@@ -212,48 +121,194 @@ class _WhiteTopHeader extends StatelessWidget {
 }
 
 // ============================================================
-// COVER IMAGE
+// COVER HERO — banner + overlay gradient + chip jenis usaha
 // ============================================================
-class _CoverImage extends StatelessWidget {
+class _CoverHero extends StatelessWidget {
   final Business? business;
-  const _CoverImage({this.business});
+  final BusinessTypeInfo typeInfo;
+  final bool loading;
+
+  const _CoverHero({
+    this.business,
+    required this.typeInfo,
+    required this.loading,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final coverSlug = getCoverImageForBusiness(business);
-    final coverUrl = 'https://nusadhipa.shop/kategori/$coverSlug.png';
+    final customBanner = business?.bannerUrl;
+    final useCustom = customBanner != null && customBanner.isNotEmpty;
+    final imageUrl =
+        useCustom ? customBanner : coverUrlForType(typeInfo);
 
     return SizedBox(
-      height: 160,
+      height: 200,
       width: double.infinity,
-      child: Image.network(
-        coverUrl,
-        fit: BoxFit.cover,
-        errorBuilder: (_, _, _) => Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFFE5232E), Color(0xFFC41E28)],
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          _NetworkCover(url: imageUrl, typeInfo: typeInfo),
+
+          // Gradient overlay (bawah lebih gelap, atas transparan)
+          IgnorePointer(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.15),
+                    Colors.black.withValues(alpha: 0.0),
+                    Colors.black.withValues(alpha: 0.35),
+                  ],
+                  stops: const [0.0, 0.5, 1.0],
+                ),
+              ),
             ),
           ),
-          child: const Center(
-            child: Icon(Icons.storefront, color: Colors.white, size: 48),
+
+          // Chip jenis usaha (kanan atas)
+          Positioned(
+            top: 12,
+            right: 12,
+            child: _TypeChip(info: typeInfo),
           ),
+
+          // Nama singkat di kiri bawah
+          if (!loading && business != null)
+            Positioned(
+              left: 16,
+              bottom: 14,
+              right: 16,
+              child: Text(
+                business!.businessName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.3,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black26,
+                      blurRadius: 6,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NetworkCover extends StatelessWidget {
+  final String url;
+  final BusinessTypeInfo typeInfo;
+
+  const _NetworkCover({required this.url, required this.typeInfo});
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.network(
+      url,
+      fit: BoxFit.cover,
+      frameBuilder: (context, child, frame, wasSyncLoaded) {
+        if (wasSyncLoaded) return child;
+        return AnimatedOpacity(
+          opacity: frame == null ? 0 : 1,
+          duration: const Duration(milliseconds: 450),
+          curve: Curves.easeOut,
+          child: child,
+        );
+      },
+      errorBuilder: (_, _, _) => _FallbackCover(info: typeInfo),
+    );
+  }
+}
+
+class _FallbackCover extends StatelessWidget {
+  final BusinessTypeInfo info;
+  const _FallbackCover({required this.info});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(gradient: info.gradient),
+      child: Center(
+        child: Icon(
+          info.icon,
+          color: Colors.white.withValues(alpha: 0.85),
+          size: 64,
         ),
       ),
     );
   }
 }
 
+class _TypeChip extends StatelessWidget {
+  final BusinessTypeInfo info;
+  const _TypeChip({required this.info});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(999),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.12),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(info.icon, size: 12, color: info.accent),
+          const SizedBox(width: 5),
+          Text(
+            info.label,
+            style: TextStyle(
+              color: info.accent,
+              fontSize: 10,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0.1,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ============================================================
-// TENANT CARD — rapih, mirip card panel di Toko & Bisnis
+// TENANT CARD — logo, nama, badge verifikasi, lokasi tap-able
 // ============================================================
 class _TenantCard extends StatelessWidget {
   final Business? business;
+  final BusinessTypeInfo typeInfo;
   final bool loading;
 
-  const _TenantCard({this.business, required this.loading});
+  const _TenantCard({
+    this.business,
+    required this.typeInfo,
+    required this.loading,
+  });
+
+  void _openLocationMap(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => LocationMapPage(business: business),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -278,7 +333,7 @@ class _TenantCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Logo tenant
+          // Logo tenant — border accent sesuai jenis usaha
           Stack(
             children: [
               Container(
@@ -288,7 +343,10 @@ class _TenantCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: line, width: 1.5),
+                  border: Border.all(
+                    color: typeInfo.accent.withValues(alpha: 0.35),
+                    width: 1.5,
+                  ),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(11),
@@ -298,15 +356,15 @@ class _TenantCard extends StatelessWidget {
                               ? business!.logoUrl!
                               : 'https://api.nusadhipa.shop${business!.logoUrl}',
                           fit: BoxFit.contain,
-                          errorBuilder: (_, _, _) => const Icon(
-                            Icons.storefront,
-                            color: brandRed,
+                          errorBuilder: (_, _, _) => Icon(
+                            typeInfo.icon,
+                            color: typeInfo.accent,
                             size: 32,
                           ),
                         )
-                      : const Icon(
-                          Icons.storefront,
-                          color: brandRed,
+                      : Icon(
+                          typeInfo.icon,
+                          color: typeInfo.accent,
                           size: 32,
                         ),
                 ),
@@ -332,6 +390,7 @@ class _TenantCard extends StatelessWidget {
             ],
           ),
           const SizedBox(width: 12),
+
           // Info
           Expanded(
             child: Column(
@@ -359,8 +418,7 @@ class _TenantCard extends StatelessWidget {
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.verified,
-                            color: Colors.white, size: 10),
+                        Icon(Icons.verified, color: Colors.white, size: 10),
                         SizedBox(width: 4),
                         Text(
                           'UMKM TERVERIFIKASI',
@@ -375,6 +433,7 @@ class _TenantCard extends StatelessWidget {
                     ),
                   ),
                 const SizedBox(height: 6),
+
                 // Nama toko
                 Text(
                   loading ? 'Memuat...' : name,
@@ -389,25 +448,45 @@ class _TenantCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 5),
-                // Lokasi
-                Row(
-                  children: [
-                    const Icon(Icons.location_on_outlined,
-                        color: brandRed, size: 11),
-                    const SizedBox(width: 3),
-                    Flexible(
-                      child: Text(
-                        location,
-                        style: const TextStyle(
-                          color: muted,
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w600,
+
+                // Lokasi — tap untuk buka peta
+                InkWell(
+                  onTap: () => _openLocationMap(context),
+                  borderRadius: BorderRadius.circular(6),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.location_on_outlined,
+                          color: typeInfo.accent,
+                          size: 11,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                        const SizedBox(width: 3),
+                        Flexible(
+                          child: Text(
+                            location,
+                            style: TextStyle(
+                              color: typeInfo.accent,
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w700,
+                              decoration: TextDecoration.underline,
+                              decorationColor:
+                                  typeInfo.accent.withValues(alpha: 0.3),
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 2),
+                        Icon(
+                          Icons.open_in_new,
+                          color: typeInfo.accent,
+                          size: 10,
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),

@@ -93,10 +93,10 @@ class _ShippingPageState extends State<ShippingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final inTransit = shipments.where((s) =>
-        s.status == 'in_transit' || s.status == 'picked_up').length;
-    final delivered =
-        shipments.where((s) => s.status == 'delivered').length;
+    final inTransit = shipments
+        .where((s) => s.status == 'in_transit' || s.status == 'picked_up')
+        .length;
+    final delivered = shipments.where((s) => s.status == 'delivered').length;
 
     return SafeArea(
       child: RefreshIndicator(
@@ -144,8 +144,11 @@ class _ShippingPageState extends State<ShippingPage> {
                             color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(13),
                           ),
-                          child: const Icon(Icons.local_shipping,
-                              color: Colors.white, size: 24),
+                          child: const Icon(
+                            Icons.local_shipping,
+                            color: Colors.white,
+                            size: 24,
+                          ),
                         ),
                         const SizedBox(height: 15),
                         const Text(
@@ -203,14 +206,16 @@ class _ShippingPageState extends State<ShippingPage> {
             else if (shipments.isEmpty)
               const _EmptyState()
             else
-              ...shipments.map((s) => Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-                    child: _ShipmentCard(
-                      shipment: s,
-                      statusColor: _statusColor(s.status),
-                      statusIcon: _statusIcon(s.status),
-                    ),
-                  )),
+              ...shipments.map(
+                (s) => Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                  child: _ShipmentCard(
+                    shipment: s,
+                    statusColor: _statusColor(s.status),
+                    statusIcon: _statusIcon(s.status),
+                  ),
+                ),
+              ),
 
             const Padding(
               padding: EdgeInsets.all(20),
@@ -340,8 +345,11 @@ class _ShipmentCard extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(11),
                       ),
-                      child: const Icon(Icons.inventory_2_outlined,
-                          color: brandRed, size: 20),
+                      child: const Icon(
+                        Icons.inventory_2_outlined,
+                        color: brandRed,
+                        size: 20,
+                      ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -372,7 +380,9 @@ class _ShipmentCard extends StatelessWidget {
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: statusColor.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(999),
@@ -403,8 +413,11 @@ class _ShipmentCard extends StatelessWidget {
                 if (shipment.courier != null) ...[
                   Row(
                     children: [
-                      const Icon(Icons.local_shipping_outlined,
-                          color: muted, size: 13),
+                      const Icon(
+                        Icons.local_shipping_outlined,
+                        color: muted,
+                        size: 13,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         '${shipment.courier ?? ""} · ${shipment.serviceName ?? ""}',
@@ -421,8 +434,7 @@ class _ShipmentCard extends StatelessWidget {
                 if (shipment.trackingNumber != null)
                   Row(
                     children: [
-                      const Icon(Icons.qr_code_rounded,
-                          color: muted, size: 13),
+                      const Icon(Icons.qr_code_rounded, color: muted, size: 13),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
@@ -468,14 +480,20 @@ class _ErrorState extends StatelessWidget {
                 color: brandRed.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.cloud_off_rounded,
-                  color: brandRed, size: 32),
+              child: const Icon(
+                Icons.cloud_off_rounded,
+                color: brandRed,
+                size: 32,
+              ),
             ),
             const SizedBox(height: 16),
             const Text(
               'Gagal memuat pengiriman',
               style: TextStyle(
-                  fontWeight: FontWeight.w900, fontSize: 16, color: ink),
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+                color: ink,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -512,7 +530,10 @@ class _EmptyState extends StatelessWidget {
             Text(
               'Belum ada pengiriman',
               style: TextStyle(
-                  fontWeight: FontWeight.w900, fontSize: 16, color: ink),
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+                color: ink,
+              ),
             ),
             SizedBox(height: 6),
             Text(

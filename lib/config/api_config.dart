@@ -8,7 +8,7 @@ class ApiConfig {
   /// ============================================================
   static const bool kUseProductionApi = bool.fromEnvironment(
     'USE_PROD',
-    defaultValue: true,
+    defaultValue: true, // <--- Ubah jadi false untuk lokal
   );
 
   /// Base URL PRODUCTION (Railway + Custom Domain)
@@ -56,7 +56,7 @@ class ApiConfig {
     return '$_otherBaseUrl/api/v1';
   }
 
-  static const int kTimeoutMs = 30000;  // 30 detik untuk production
+  static const int kTimeoutMs = 30000; // 30 detik untuk production
 
   // ============================================================
   // Endpoint paths
@@ -85,7 +85,10 @@ class ApiConfig {
   /// Helper untuk debug: print URL yang sedang dipakai
   static void printCurrentConfig() {
     if (!kDebugMode) return;
-    debugPrint('🔧 ApiConfig: ${kUseProductionApi ? "PRODUCTION" : "LOCAL DEV"}');
+    debugPrint(
+      '🔧 ApiConfig: ${kUseProductionApi ? "PRODUCTION" : "LOCAL DEV"}',
+    );
     debugPrint('🔧 Base URL: $kApiBaseUrl');
   }
 }
+

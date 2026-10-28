@@ -1,6 +1,7 @@
 import 'add_product_page.dart';
 import 'edit_product_page.dart';
 import 'package:flutter/material.dart';
+import '../pages/produk_page.dart';
 import '../config/api_config.dart';
 import '../config/theme.dart';
 import '../models/product.dart';
@@ -42,9 +43,12 @@ class _ProductsPageState extends State<ProductsPage> {
         biz = null;
       }
 
+      // Fallback slug jika biz null (sementara hardcode)
+      final slug = biz?.slug ?? 'fresh-market-unggas-animal-petfood-indonesia';
+
       final result = await ApiService().getProducts(
         limit: 100,
-        businessSlug: biz?.slug,
+        businessSlug: slug,
       );
 
       if (!mounted) return;
@@ -71,10 +75,12 @@ class _ProductsPageState extends State<ProductsPage> {
   @override
   Widget build(BuildContext context) {
     final result = products
-        .where((p) =>
-            p.name.toLowerCase().contains(search.toLowerCase()) ||
-            p.categoryName.toLowerCase().contains(search.toLowerCase()) ||
-            p.businessName.toLowerCase().contains(search.toLowerCase()))
+        .where(
+          (p) =>
+              p.name.toLowerCase().contains(search.toLowerCase()) ||
+              p.categoryName.toLowerCase().contains(search.toLowerCase()) ||
+              p.businessName.toLowerCase().contains(search.toLowerCase()),
+        )
         .toList();
 
     return Stack(
@@ -108,8 +114,11 @@ class _ProductsPageState extends State<ProductsPage> {
                     decoration: InputDecoration(
                       hintText: 'Cari produk atau kategori...',
                       hintStyle: const TextStyle(fontSize: 13, color: muted),
-                      prefixIcon: const Icon(Icons.search_rounded,
-                          color: brandRed, size: 22),
+                      prefixIcon: const Icon(
+                        Icons.search_rounded,
+                        color: brandRed,
+                        size: 22,
+                      ),
                       filled: true,
                       fillColor: Colors.transparent,
                       border: OutlineInputBorder(
@@ -126,8 +135,8 @@ class _ProductsPageState extends State<ProductsPage> {
                 child: loading
                     ? const Center(child: CircularProgressIndicator())
                     : error != null
-                        ? _buildError()
-                        : _buildList(result),
+                    ? _buildError()
+                    : _buildList(result),
               ),
             ],
           ),
@@ -264,10 +273,16 @@ class _ProductTile extends StatelessWidget {
                         title: const Text('Hapus Produk?'),
                         content: Text('Yakin ingin menghapus ${product.name}?'),
                         actions: [
-                          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Batal')),
                           TextButton(
-                            onPressed: () => Navigator.pop(c, true), 
-                            child: const Text('Hapus', style: TextStyle(color: Colors.red))
+                            onPressed: () => Navigator.pop(c, false),
+                            child: const Text('Batal'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(c, true),
+                            child: const Text(
+                              'Hapus',
+                              style: TextStyle(color: Colors.red),
+                            ),
                           ),
                         ],
                       ),
@@ -318,10 +333,8 @@ class _ProductTile extends StatelessWidget {
                     ? Image.network(
                         imageUrl,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Icon(
-                          Icons.image_outlined,
-                          color: brandRed,
-                        ),
+                        errorBuilder: (_, _, _) =>
+                            const Icon(Icons.image_outlined, color: brandRed),
                       )
                     : const Icon(Icons.image_outlined, color: brandRed),
               ),

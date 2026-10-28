@@ -30,7 +30,12 @@ class _StorePageState extends State<StorePage> {
   Future<void> _loadProfile() async {
     try {
       final biz = await ApiService().getMyBusiness();
-      if (mounted) setState(() { _business = biz; _loading = false; });
+      if (mounted) {
+        setState(() {
+          _business = biz;
+          _loading = false;
+        });
+      }
     } catch (e) {
       if (mounted) setState(() => _loading = false);
     }
@@ -41,8 +46,11 @@ class _StorePageState extends State<StorePage> {
     final picked = await picker.pickImage(source: ImageSource.gallery);
     if (picked != null) {
       setState(() {
-        if (isLogo) _newLogo = File(picked.path);
-        else _newCover = File(picked.path);
+        if (isLogo) {
+          _newLogo = File(picked.path);
+        } else {
+          _newCover = File(picked.path);
+        }
       });
       _uploadImage(isLogo);
     }
@@ -60,18 +68,20 @@ class _StorePageState extends State<StorePage> {
       } else {
         await ApiService().uploadBanner(file);
       }
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('✅ ${isLogo ? "Logo" : "Cover"} berhasil diupdate!')),
+          SnackBar(
+            content: Text('✅ ${isLogo ? "Logo" : "Cover"} berhasil diupdate!'),
+          ),
         );
         _loadProfile();
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ Gagal upload: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('❌ Gagal upload: $e')));
       }
     } finally {
       if (mounted) setState(() => _uploading = false);
@@ -86,7 +96,9 @@ class _StorePageState extends State<StorePage> {
   @override
   Widget build(BuildContext context) {
     if (_loading) return const Center(child: CircularProgressIndicator());
-    if (_business == null) return const Center(child: Text('Gagal load data toko'));
+    if (_business == null) {
+      return const Center(child: Text('Gagal load data toko'));
+    }
 
     final coverUrl = ApiConfig.resolveImageUrl(_business!.bannerUrl);
     final logoUrl = ApiConfig.resolveImageUrl(_business!.logoUrl);
@@ -110,21 +122,36 @@ class _StorePageState extends State<StorePage> {
                       image: DecorationImage(
                         image: _newCover != null
                             ? FileImage(_newCover!)
-                            : (coverUrl != null ? NetworkImage(coverUrl) : const AssetImage('assets/placeholder.png')) as ImageProvider,
+                            : (coverUrl != null
+                                      ? NetworkImage(coverUrl)
+                                      : const AssetImage(
+                                          'assets/placeholder.png',
+                                        ))
+                                  as ImageProvider,
                         fit: BoxFit.cover,
                       ),
                     ),
                   ),
                   Positioned(
-                    bottom: 10, right: 10,
+                    bottom: 10,
+                    right: 10,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(20)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                       child: const Row(
                         children: [
                           Icon(Icons.camera_alt, color: Colors.white, size: 14),
                           SizedBox(width: 4),
-                          Text('Ganti Cover', style: TextStyle(color: Colors.white, fontSize: 11)),
+                          Text(
+                            'Ganti Cover',
+                            style: TextStyle(color: Colors.white, fontSize: 11),
+                          ),
                         ],
                       ),
                     ),
@@ -147,23 +174,39 @@ class _StorePageState extends State<StorePage> {
                         GestureDetector(
                           onTap: _uploading ? null : () => _pickImage(true),
                           child: Container(
-                            width: 90, height: 90,
+                            width: 90,
+                            height: 90,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.white, width: 4),
-                              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 10)],
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.2),
+                                  blurRadius: 10,
+                                ),
+                              ],
                               image: DecorationImage(
                                 image: _newLogo != null
                                     ? FileImage(_newLogo!)
-                                    : (logoUrl != null ? NetworkImage(logoUrl) : const AssetImage('assets/placeholder.png')) as ImageProvider,
+                                    : (logoUrl != null
+                                              ? NetworkImage(logoUrl)
+                                              : const AssetImage(
+                                                  'assets/placeholder.png',
+                                                ))
+                                          as ImageProvider,
                                 fit: BoxFit.cover,
                               ),
                             ),
                             child: Align(
                               alignment: Alignment.bottomRight,
                               child: CircleAvatar(
-                                radius: 14, backgroundColor: Colors.black54,
-                                child: const Icon(Icons.camera_alt, color: Colors.white, size: 16),
+                                radius: 14,
+                                backgroundColor: Colors.black54,
+                                child: const Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
                               ),
                             ),
                           ),
@@ -177,14 +220,28 @@ class _StorePageState extends State<StorePage> {
                               children: [
                                 Text(
                                   _business!.businessName,
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, height: 1.2),
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w900,
+                                    height: 1.2,
+                                  ),
                                 ),
                                 const SizedBox(height: 4),
                                 Row(
                                   children: [
-                                    const Icon(Icons.location_on, color: brandRed, size: 14),
+                                    const Icon(
+                                      Icons.location_on,
+                                      color: brandRed,
+                                      size: 14,
+                                    ),
                                     const SizedBox(width: 4),
-                                    Text('${_business!.city}, ${_business!.province}', style: const TextStyle(fontSize: 12, color: muted)),
+                                    Text(
+                                      '${_business!.city}, ${_business!.province}',
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: muted,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -194,24 +251,40 @@ class _StorePageState extends State<StorePage> {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    
+
                     // BADGE
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(color: brandRed.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: brandRed.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.verified, color: brandRed, size: 14),
                           SizedBox(width: 4),
-                          Text('TERVERIFIKASI AHU & OSS', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: brandRed)),
+                          Text(
+                            'TERVERIFIKASI AHU & OSS',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: brandRed,
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 12),
 
                     // INFO NIB & NPWP
-                    Text('NIB: ${_business!.nib ?? '-'}   NPWP: ${_business!.taxNumber ?? '-'}', style: const TextStyle(fontSize: 11, color: muted)),
+                    Text(
+                      'NIB: ${_business!.nib ?? '-'}   NPWP: ${_business!.taxNumber ?? '-'}',
+                      style: const TextStyle(fontSize: 11, color: muted),
+                    ),
                     const SizedBox(height: 16),
 
                     // TOMBOL AKSI
@@ -219,10 +292,14 @@ class _StorePageState extends State<StorePage> {
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: () => _openWhatsApp(_business!.phone ?? ''),
+                            onPressed: () =>
+                                _openWhatsApp(_business!.phone ?? ''),
                             icon: const Icon(Icons.chat, size: 16),
                             label: const Text('Chat WhatsApp'),
-                            style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -231,7 +308,9 @@ class _StorePageState extends State<StorePage> {
                             onPressed: () {},
                             icon: const Icon(Icons.phone, size: 16),
                             label: const Text('Telepon'),
-                            style: OutlinedButton.styleFrom(foregroundColor: ink),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: ink,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -240,7 +319,10 @@ class _StorePageState extends State<StorePage> {
                             onPressed: () {},
                             icon: const Icon(Icons.star, size: 16),
                             label: const Text('Follow'),
-                            style: ElevatedButton.styleFrom(backgroundColor: brandRed, foregroundColor: Colors.white),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: brandRed,
+                              foregroundColor: Colors.white,
+                            ),
                           ),
                         ),
                       ],
@@ -261,7 +343,11 @@ class _StorePageState extends State<StorePage> {
                   const SizedBox(width: 8),
                   _buildStatCard(Icons.verified, 'Verified', 'STATUS'),
                   const SizedBox(width: 8),
-                  _buildStatCard(Icons.storefront, _business!.businessType.toUpperCase(), 'TIPE USAHA'),
+                  _buildStatCard(
+                    Icons.storefront,
+                    _business!.businessType.toUpperCase(),
+                    'TIPE USAHA',
+                  ),
                 ],
               ),
             ),
@@ -273,14 +359,24 @@ class _StorePageState extends State<StorePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Info Bisnis', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  const Text(
+                    'Info Bisnis',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 12),
                   Container(
                     padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: line)),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: line),
+                    ),
                     child: Column(
                       children: [
-                        _buildInfoRow('Badan Usaha', _business!.legalName ?? '-'),
+                        _buildInfoRow(
+                          'Badan Usaha',
+                          _business!.legalName ?? '-',
+                        ),
                         const Divider(),
                         _buildInfoRow('NIB', _business!.nib ?? '-'),
                         const Divider(),
@@ -302,13 +398,27 @@ class _StorePageState extends State<StorePage> {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: line)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: line),
+        ),
         child: Column(
           children: [
             Icon(icon, color: brandRed, size: 24),
             const SizedBox(height: 8),
-            Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
-            Text(label, style: const TextStyle(fontSize: 9, color: muted, fontWeight: FontWeight.bold)),
+            Text(
+              value,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+            ),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 9,
+                color: muted,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
       ),
@@ -319,10 +429,21 @@ class _StorePageState extends State<StorePage> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(flex: 2, child: Text(label, style: const TextStyle(fontSize: 12, color: muted))),
-        Expanded(flex: 3, child: Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+        Expanded(
+          flex: 2,
+          child: Text(
+            label,
+            style: const TextStyle(fontSize: 12, color: muted),
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: Text(
+            value,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          ),
+        ),
       ],
     );
   }
 }
-

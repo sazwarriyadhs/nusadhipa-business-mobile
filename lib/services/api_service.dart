@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import '../config/api_config.dart';
@@ -28,30 +29,30 @@ class ApiService {
     final token = await AuthService().getToken();
     final headers = <String, String>{'Accept': 'application/json'};
     if (isJson) headers['Content-Type'] = 'application/json';
-    if (token != null && token.isNotEmpty) headers['Authorization'] = 'Bearer $token';
+    if (token != null && token.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
+    }
     return headers;
   }
 
-
-  Future<Map<String, dynamic>> _get(String path,
-      {Map<String, String>? query}) async {
-    final uri = Uri.parse('${ApiConfig.kApiBaseUrl}$path')
-        .replace(queryParameters: query);
-
+  Future<Map<String, dynamic>> _get(
+    String path, {
+    Map<String, String>? query,
+  }) async {
+    final uri = Uri.parse(
+      '${ApiConfig.kApiBaseUrl}$path',
+    ).replace(queryParameters: query);
     try {
       final headers = await _getHeaders(isJson: false);
-
       final response = await http
           .get(uri, headers: headers)
           .timeout(const Duration(milliseconds: ApiConfig.kTimeoutMs));
-
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw ApiException(
           'API mengembalikan HTTP ${response.statusCode}',
           statusCode: response.statusCode,
         );
       }
-
       return jsonDecode(response.body) as Map<String, dynamic>;
     } on TimeoutException {
       throw ApiException('Permintaan timeout. Periksa koneksi.');
@@ -65,27 +66,28 @@ class ApiService {
     String? query,
     String? category,
     String? businessSlug,
+    String? status,
     int page = 1,
-    int limit = 20,
+    int limit = 100, // Diubah default ke 100 agar semua produk muncul
   }) async {
     final params = <String, String>{
       'page': page.toString(),
       'limit': limit.toString(),
     };
-    if (query != null && query.trim().isNotEmpty) {
-      params['q'] = query.trim();
-    }
+    if (query != null && query.trim().isNotEmpty) params['q'] = query.trim();
     if (category != null && category.trim().isNotEmpty) {
       params['category'] = category.trim();
     }
     if (businessSlug != null && businessSlug.trim().isNotEmpty) {
       params['business'] = businessSlug.trim();
     }
+    if (status != null && status.trim().isNotEmpty) {
+      params['status'] = status.trim();
+    }
 
     final json = await _get(ApiConfig.kProducts, query: params);
     final data = json['data'];
     if (data is! List) return [];
-
     return data
         .whereType<Map<String, dynamic>>()
         .map(Product.fromJson)
@@ -96,14 +98,12 @@ class ApiService {
     final json = await _get(ApiConfig.kCategories);
     final data = json['data'];
     if (data is! List) return [];
-
     return data
         .whereType<Map<String, dynamic>>()
         .map(Category.fromJson)
         .toList();
   }
 
-  // ==================== BUSINESS ====================
   Future<Business> getMyBusiness() async {
     final json = await _get(ApiConfig.kBusinessMe);
     final data = json['data'];
@@ -113,36 +113,27 @@ class ApiService {
     return Business.fromJson(data);
   }
 
-  // ==================== ORDERS ====================
   Future<List<Order>> getOrders({String? status}) async {
     final params = <String, String>{};
     if (status != null && status.isNotEmpty && status != 'all') {
       params['status'] = status;
     }
-
     final json = await _get(ApiConfig.kOrders, query: params);
     final data = json['data'];
     if (data is! List) return [];
-
-    return data
-        .whereType<Map<String, dynamic>>()
-        .map(Order.fromJson)
-        .toList();
+    return data.whereType<Map<String, dynamic>>().map(Order.fromJson).toList();
   }
 
-  // ==================== SHIPMENTS ====================
   Future<List<Shipment>> getShipments() async {
     final json = await _get(ApiConfig.kShipments);
     final data = json['data'];
     if (data is! List) return [];
-
     return data
         .whereType<Map<String, dynamic>>()
         .map(Shipment.fromJson)
         .toList();
   }
 
-  // ==================== ORDER DETAIL ====================
   Future<OrderDetail> getOrderDetail(String publicId) async {
     final json = await _get('${ApiConfig.kOrders}/$publicId');
     final data = json['data'];
@@ -152,15 +143,10 @@ class ApiService {
     return OrderDetail.fromJson(data);
   }
 
-  // ==================== FINANCIAL REPORT ====================
-  Future<FinancialReport> getFinancialReport({
-    String? from,
-    String? to,
-  }) async {
+  Future<FinancialReport> getFinancialReport({String? from, String? to}) async {
     final params = <String, String>{};
     if (from != null) params['from'] = from;
     if (to != null) params['to'] = to;
-
     final json = await _get(ApiConfig.kReportFinancial, query: params);
     final data = json['data'];
     if (data is! Map<String, dynamic>) {
@@ -169,7 +155,6 @@ class ApiService {
     return FinancialReport.fromJson(data);
   }
 
-  // ==================== CREATE PRODUCT ====================
   Future<Map<String, dynamic>> createProduct({
     required String name,
     required double price,
@@ -179,7 +164,6 @@ class ApiService {
     String? sku,
   }) async {
     final uri = Uri.parse('${ApiConfig.kApiBaseUrl}${ApiConfig.kProducts}');
-
     try {
       final response = await http
           .post(
@@ -197,20 +181,17 @@ class ApiService {
           .timeout(const Duration(milliseconds: ApiConfig.kTimeoutMs));
 
       final json = jsonDecode(response.body) as Map<String, dynamic>;
-
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw ApiException(
           json['message']?.toString() ?? 'Gagal membuat produk',
           statusCode: response.statusCode,
         );
       }
-
       if (json['success'] != true) {
         throw ApiException(
           json['message']?.toString() ?? 'Gagal membuat produk',
         );
       }
-
       final data = json['data'];
       if (data is Map<String, dynamic>) return data;
       return <String, dynamic>{};
@@ -222,7 +203,6 @@ class ApiService {
     }
   }
 
-  // ==================== UPDATE PRODUCT ====================
   Future<Map<String, dynamic>> updateProduct({
     required String publicId,
     String? name,
@@ -234,7 +214,6 @@ class ApiService {
     final uri = Uri.parse(
       '${ApiConfig.kApiBaseUrl}${ApiConfig.kProducts}/$publicId',
     );
-
     final body = <String, dynamic>{};
     if (name != null) body['name'] = name.trim();
     if (price != null) body['price'] = price;
@@ -244,28 +223,20 @@ class ApiService {
 
     try {
       final response = await http
-          .put(
-            uri,
-            headers: await _getHeaders(),
-            body: jsonEncode(body),
-          )
+          .put(uri, headers: await _getHeaders(), body: jsonEncode(body))
           .timeout(const Duration(milliseconds: ApiConfig.kTimeoutMs));
-
       final json = jsonDecode(response.body) as Map<String, dynamic>;
-
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw ApiException(
           json['message']?.toString() ?? 'Gagal update produk',
           statusCode: response.statusCode,
         );
       }
-
       if (json['success'] != true) {
         throw ApiException(
           json['message']?.toString() ?? 'Gagal update produk',
         );
       }
-
       final data = json['data'];
       if (data is Map<String, dynamic>) return data;
       return <String, dynamic>{};
@@ -277,33 +248,23 @@ class ApiService {
     }
   }
 
-  // ==================== DELETE PRODUCT ====================
   Future<void> deleteProduct(String publicId) async {
     final uri = Uri.parse(
       '${ApiConfig.kApiBaseUrl}${ApiConfig.kProducts}/$publicId',
     );
-
     try {
       final response = await http
-          .delete(
-            uri,
-            headers: await _getHeaders(),
-          )
+          .delete(uri, headers: await _getHeaders())
           .timeout(const Duration(milliseconds: ApiConfig.kTimeoutMs));
-
       final json = jsonDecode(response.body) as Map<String, dynamic>;
-
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw ApiException(
           json['message']?.toString() ?? 'Gagal hapus produk',
           statusCode: response.statusCode,
         );
       }
-
       if (json['success'] != true) {
-        throw ApiException(
-          json['message']?.toString() ?? 'Gagal hapus produk',
-        );
+        throw ApiException(json['message']?.toString() ?? 'Gagal hapus produk');
       }
     } on TimeoutException {
       throw ApiException('Permintaan timeout. Periksa koneksi.');
@@ -313,16 +274,25 @@ class ApiService {
     }
   }
 
-    // ==================== UPLOAD LOGO ====================
   Future<void> uploadLogo(File imageFile) async {
     final uri = Uri.parse('${ApiConfig.kApiBaseUrl}/businesses/me/logo');
     try {
       final request = http.MultipartRequest('POST', uri);
       final headers = await _getHeaders(isJson: false);
       request.headers.addAll(headers);
-      request.files.add(await http.MultipartFile.fromPath('logo', imageFile.path));
-      
-      final streamed = await request.send().timeout(const Duration(milliseconds: 30000));
+      if (kIsWeb) {
+        final bytes = await imageFile.readAsBytes();
+        request.files.add(
+          http.MultipartFile.fromBytes('logo', bytes, filename: 'logo.jpg'),
+        );
+      } else {
+        request.files.add(
+          await http.MultipartFile.fromPath('logo', imageFile.path),
+        );
+      }
+      final streamed = await request.send().timeout(
+        const Duration(milliseconds: 30000),
+      );
       final response = await http.Response.fromStream(streamed);
       final json = jsonDecode(response.body);
       if (response.statusCode < 200 || response.statusCode >= 300) {
@@ -336,20 +306,31 @@ class ApiService {
     }
   }
 
-  // ==================== UPLOAD BANNER ====================
   Future<void> uploadBanner(File imageFile) async {
     final uri = Uri.parse('${ApiConfig.kApiBaseUrl}/businesses/me/banner');
     try {
       final request = http.MultipartRequest('POST', uri);
       final headers = await _getHeaders(isJson: false);
       request.headers.addAll(headers);
-      request.files.add(await http.MultipartFile.fromPath('banner', imageFile.path));
-      
-      final streamed = await request.send().timeout(const Duration(milliseconds: 30000));
+      if (kIsWeb) {
+        final bytes = await imageFile.readAsBytes();
+        request.files.add(
+          http.MultipartFile.fromBytes('banner', bytes, filename: 'banner.jpg'),
+        );
+      } else {
+        request.files.add(
+          await http.MultipartFile.fromPath('banner', imageFile.path),
+        );
+      }
+      final streamed = await request.send().timeout(
+        const Duration(milliseconds: 30000),
+      );
       final response = await http.Response.fromStream(streamed);
       final json = jsonDecode(response.body);
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiException(json['message']?.toString() ?? 'Gagal upload banner');
+        throw ApiException(
+          json['message']?.toString() ?? 'Gagal upload banner',
+        );
       }
     } on TimeoutException {
       throw ApiException('Upload timeout.');
@@ -359,9 +340,6 @@ class ApiService {
     }
   }
 
-  // ==================== GET MY BUSINESS (Pastikan udah ada) ====================
-  // (Kalau lu udah punya fungsi ini, biarin aja, ini cuma jaga-jaga)
-  // ==================== GET PRODUCT DETAIL ====================
   Future<Product> getProduct(String slug) async {
     final json = await _get(
       '${ApiConfig.kProducts}/${Uri.encodeComponent(slug)}',
@@ -373,7 +351,6 @@ class ApiService {
     return Product.fromJson(data);
   }
 
-  // ==================== UPLOAD PRODUCT IMAGE ====================
   Future<Map<String, dynamic>> uploadProductImage({
     required String productPublicId,
     required File imageFile,
@@ -382,7 +359,6 @@ class ApiService {
     final uri = Uri.parse(
       '${ApiConfig.kApiBaseUrl}/products/$productPublicId/images',
     );
-
     try {
       final request = http.MultipartRequest('POST', uri);
       final headers = await _getHeaders(isJson: false);
@@ -392,21 +368,33 @@ class ApiService {
       final mimeType = ext == 'png'
           ? 'image/png'
           : ext == 'webp'
-              ? 'image/webp'
-              : 'image/jpeg';
+          ? 'image/webp'
+          : 'image/jpeg';
 
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'image',
-          imageFile.path,
-          contentType: MediaType.parse(mimeType),
-        ),
-      );
+      if (kIsWeb) {
+        final bytes = await imageFile.readAsBytes();
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'image',
+            bytes,
+            filename: 'upload.$ext',
+            contentType: MediaType.parse(mimeType),
+          ),
+        );
+      } else {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'image',
+            imageFile.path,
+            contentType: MediaType.parse(mimeType),
+          ),
+        );
+      }
       request.fields['is_primary'] = isPrimary ? '1' : '0';
 
-      final streamed = await request
-          .send()
-          .timeout(const Duration(milliseconds: 30000));
+      final streamed = await request.send().timeout(
+        const Duration(milliseconds: 30000),
+      );
       final response = await http.Response.fromStream(streamed);
       final json = jsonDecode(response.body) as Map<String, dynamic>;
 
@@ -416,13 +404,11 @@ class ApiService {
           statusCode: response.statusCode,
         );
       }
-
       if (json['success'] != true) {
         throw ApiException(
           json['message']?.toString() ?? 'Gagal upload gambar',
         );
       }
-
       final data = json['data'];
       if (data is Map<String, dynamic>) return data;
       return <String, dynamic>{};
@@ -434,5 +420,3 @@ class ApiService {
     }
   }
 }
-
-

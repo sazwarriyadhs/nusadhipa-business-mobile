@@ -18,13 +18,13 @@ class OrderLineItem {
   });
 
   factory OrderLineItem.fromJson(Map<String, dynamic> json) => OrderLineItem(
-        productName: (json['product_name'] ?? '').toString(),
-        variantName: (json['variant_name'] ?? '').toString(),
-        sku: json['sku']?.toString(),
-        quantity: _toDouble(json['quantity']),
-        unitPrice: _toDouble(json['unit_price']),
-        lineTotal: _toDouble(json['line_total']),
-      );
+    productName: (json['product_name'] ?? '').toString(),
+    variantName: (json['variant_name'] ?? '').toString(),
+    sku: json['sku']?.toString(),
+    quantity: _toDouble(json['quantity']),
+    unitPrice: _toDouble(json['unit_price']),
+    lineTotal: _toDouble(json['line_total']),
+  );
 }
 
 class OrderDetail {

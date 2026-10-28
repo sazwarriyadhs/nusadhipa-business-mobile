@@ -113,17 +113,19 @@ class _OrdersPageState extends State<OrdersPage> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: filters
-                  .map((f) => Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: _FilterChip(
-                          label: f.$2,
-                          selected: filter == f.$1,
-                          onTap: () {
-                            setState(() => filter = f.$1);
-                            _load();
-                          },
-                        ),
-                      ))
+                  .map(
+                    (f) => Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: _FilterChip(
+                        label: f.$2,
+                        selected: filter == f.$1,
+                        onTap: () {
+                          setState(() => filter = f.$1);
+                          _load();
+                        },
+                      ),
+                    ),
+                  )
                   .toList(),
             ),
           ),
@@ -136,25 +138,23 @@ class _OrdersPageState extends State<OrdersPage> {
                     child: CircularProgressIndicator(color: brandRed),
                   )
                 : error != null
-                    ? _ErrorState(message: error!, onRetry: _load)
-                    : orders.isEmpty
-                        ? const _EmptyState()
-                        : RefreshIndicator(
-                            color: brandRed,
-                            onRefresh: _load,
-                            child: ListView.separated(
-                              padding:
-                                  const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                              itemCount: orders.length,
-                              separatorBuilder: (_, _) =>
-                                  const SizedBox(height: 12),
-                              itemBuilder: (context, i) => _OrderCard(
-                                order: orders[i],
-                                statusColor: _statusColor(orders[i].status),
-                                statusIcon: _statusIcon(orders[i].status),
-                              ),
-                            ),
-                          ),
+                ? _ErrorState(message: error!, onRetry: _load)
+                : orders.isEmpty
+                ? const _EmptyState()
+                : RefreshIndicator(
+                    color: brandRed,
+                    onRefresh: _load,
+                    child: ListView.separated(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                      itemCount: orders.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 12),
+                      itemBuilder: (context, i) => _OrderCard(
+                        order: orders[i],
+                        statusColor: _statusColor(orders[i].status),
+                        statusIcon: _statusIcon(orders[i].status),
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),
@@ -184,9 +184,7 @@ class _FilterChip extends StatelessWidget {
           gradient: selected ? brandGradient : null,
           color: selected ? null : Colors.white,
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(
-            color: selected ? Colors.transparent : line,
-          ),
+          border: Border.all(color: selected ? Colors.transparent : line),
           boxShadow: selected
               ? [
                   BoxShadow(
@@ -226,9 +224,8 @@ class _OrderCard extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => const Center(
-        child: CircularProgressIndicator(color: brandRed),
-      ),
+      builder: (_) =>
+          const Center(child: CircularProgressIndicator(color: brandRed)),
     );
 
     try {
@@ -242,10 +239,7 @@ class _OrderCard extends StatelessWidget {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => InvoicePreviewPage(
-            business: business,
-            order: detail,
-          ),
+          builder: (_) => InvoicePreviewPage(business: business, order: detail),
         ),
       );
     } catch (e) {
@@ -309,8 +303,11 @@ class _OrderCard extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(Icons.receipt_long,
-                          color: brandRed, size: 18),
+                      child: const Icon(
+                        Icons.receipt_long,
+                        color: brandRed,
+                        size: 18,
+                      ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -326,7 +323,9 @@ class _OrderCard extends StatelessWidget {
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 9, vertical: 4),
+                        horizontal: 9,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: statusColor.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(999),
@@ -356,8 +355,11 @@ class _OrderCard extends StatelessWidget {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    const Icon(Icons.person_outline_rounded,
-                        color: muted, size: 13),
+                    const Icon(
+                      Icons.person_outline_rounded,
+                      color: muted,
+                      size: 13,
+                    ),
                     const SizedBox(width: 5),
                     Expanded(
                       child: Text(
@@ -372,8 +374,11 @@ class _OrderCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Icon(Icons.inventory_2_outlined,
-                        color: muted, size: 12),
+                    const Icon(
+                      Icons.inventory_2_outlined,
+                      color: muted,
+                      size: 12,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       '${order.itemsCount} item',
@@ -392,7 +397,9 @@ class _OrderCard extends StatelessWidget {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 7, vertical: 3),
+                          horizontal: 7,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: order.isFreeShipping
                               ? emeraldGreen.withValues(alpha: 0.12)
@@ -431,11 +438,11 @@ class _OrderCard extends StatelessWidget {
                       const SizedBox(width: 6),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 7, vertical: 3),
+                          horizontal: 7,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
-                          gradient: order.isFreeShipping
-                              ? goldGradient
-                              : null,
+                          gradient: order.isFreeShipping ? goldGradient : null,
                           color: order.isFreeShipping ? null : canvas,
                           borderRadius: BorderRadius.circular(6),
                         ),
@@ -505,7 +512,9 @@ class _OrderCard extends StatelessWidget {
                       onTap: () => _openInvoice(context, order),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 9),
+                          horizontal: 14,
+                          vertical: 9,
+                        ),
                         decoration: BoxDecoration(
                           gradient: brandGradient,
                           borderRadius: BorderRadius.circular(10),
@@ -520,8 +529,11 @@ class _OrderCard extends StatelessWidget {
                         child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.receipt_long_rounded,
-                                color: Colors.white, size: 14),
+                            Icon(
+                              Icons.receipt_long_rounded,
+                              color: Colors.white,
+                              size: 14,
+                            ),
                             SizedBox(width: 5),
                             Text(
                               'Invoice',
@@ -566,14 +578,20 @@ class _ErrorState extends StatelessWidget {
                 color: brandRed.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.cloud_off_rounded,
-                  color: brandRed, size: 32),
+              child: const Icon(
+                Icons.cloud_off_rounded,
+                color: brandRed,
+                size: 32,
+              ),
             ),
             const SizedBox(height: 16),
             const Text(
               'Gagal memuat pesanan',
               style: TextStyle(
-                  fontWeight: FontWeight.w900, fontSize: 16, color: ink),
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+                color: ink,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -610,7 +628,10 @@ class _EmptyState extends StatelessWidget {
             Text(
               'Belum ada pesanan',
               style: TextStyle(
-                  fontWeight: FontWeight.w900, fontSize: 16, color: ink),
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+                color: ink,
+              ),
             ),
             SizedBox(height: 6),
             Text(

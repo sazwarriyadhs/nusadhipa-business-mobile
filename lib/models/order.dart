@@ -38,30 +38,30 @@ class Order {
   });
 
   factory Order.fromJson(Map<String, dynamic> json) => Order(
-        publicId: (json['public_id'] ?? '').toString(),
-        orderNumber: (json['order_number'] ?? '').toString(),
-        status: (json['status'] ?? 'pending_payment').toString(),
-        currency: (json['currency'] ?? 'IDR').toString(),
-        grandTotal: _num(json['grand_total']),
-        subtotal: _num(json['subtotal']),
-        shippingTotal: _num(json['shipping_total']),
-        placedAt: _parseDate(json['placed_at']),
-        paidAt: _parseDate(json['paid_at']),
-        completedAt: _parseDate(json['completed_at']),
-        buyerName: (json['buyer_name'] ?? 'Pembeli').toString(),
-        buyerEmail: json['buyer_email']?.toString(),
-        itemsCount: (json['items_count'] as num?)?.toInt() ?? 0,
-        totalQuantity: _num(json['total_quantity']),
-        shippingDistanceKm: json['shipping_distance_km'] != null
-            ? _num(json['shipping_distance_km'])
-            : null,
-        shippingLat: json['shipping_lat'] != null
-            ? _num(json['shipping_lat'])
-            : null,
-        shippingLng: json['shipping_lng'] != null
-            ? _num(json['shipping_lng'])
-            : null,
-      );
+    publicId: (json['public_id'] ?? '').toString(),
+    orderNumber: (json['order_number'] ?? '').toString(),
+    status: (json['status'] ?? 'pending_payment').toString(),
+    currency: (json['currency'] ?? 'IDR').toString(),
+    grandTotal: _num(json['grand_total']),
+    subtotal: _num(json['subtotal']),
+    shippingTotal: _num(json['shipping_total']),
+    placedAt: _parseDate(json['placed_at']),
+    paidAt: _parseDate(json['paid_at']),
+    completedAt: _parseDate(json['completed_at']),
+    buyerName: (json['buyer_name'] ?? 'Pembeli').toString(),
+    buyerEmail: json['buyer_email']?.toString(),
+    itemsCount: (json['items_count'] as num?)?.toInt() ?? 0,
+    totalQuantity: _num(json['total_quantity']),
+    shippingDistanceKm: json['shipping_distance_km'] != null
+        ? _num(json['shipping_distance_km'])
+        : null,
+    shippingLat: json['shipping_lat'] != null
+        ? _num(json['shipping_lat'])
+        : null,
+    shippingLng: json['shipping_lng'] != null
+        ? _num(json['shipping_lng'])
+        : null,
+  );
 
   String get statusLabel {
     switch (status) {
@@ -140,18 +140,18 @@ class Shipment {
   });
 
   factory Shipment.fromJson(Map<String, dynamic> json) => Shipment(
-        id: (json['id'] as num?)?.toInt() ?? 0,
-        orderNumber: (json['order_number'] ?? '').toString(),
-        orderPublicId: (json['order_public_id'] ?? '').toString(),
-        courier: json['courier']?.toString(),
-        serviceName: json['service_name']?.toString(),
-        trackingNumber: json['tracking_number']?.toString(),
-        status: (json['status'] ?? 'pending').toString(),
-        shippingCost: _num(json['shipping_cost']),
-        shippedAt: _parseDate(json['shipped_at']),
-        deliveredAt: _parseDate(json['delivered_at']),
-        destinationCity: json['destination_city']?.toString(),
-      );
+    id: (json['id'] as num?)?.toInt() ?? 0,
+    orderNumber: (json['order_number'] ?? '').toString(),
+    orderPublicId: (json['order_public_id'] ?? '').toString(),
+    courier: json['courier']?.toString(),
+    serviceName: json['service_name']?.toString(),
+    trackingNumber: json['tracking_number']?.toString(),
+    status: (json['status'] ?? 'pending').toString(),
+    shippingCost: _num(json['shipping_cost']),
+    shippedAt: _parseDate(json['shipped_at']),
+    deliveredAt: _parseDate(json['delivered_at']),
+    destinationCity: json['destination_city']?.toString(),
+  );
 
   String get statusLabel {
     switch (status) {

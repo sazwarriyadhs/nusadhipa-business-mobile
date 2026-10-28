@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import '../config/api_config.dart';
@@ -24,7 +25,7 @@ class _EditProductPageState extends State<EditProductPage> {
 
   String? _selectedCategory;
   bool _submitting = false;
-  File? _newImageFile; // <--- File gambar baru
+  File? _newImageFile;
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -81,13 +82,10 @@ class _EditProductPageState extends State<EditProductPage> {
         name: _nameController.text,
         price: double.parse(_priceController.text.replaceAll('.', '')),
         stock: int.parse(_stockController.text),
-        description: _descController.text.isEmpty
-            ? null
-            : _descController.text,
+        description: _descController.text.isEmpty ? null : _descController.text,
         categorySlug: _selectedCategory,
       );
 
-      // Kalau user ganti gambar, upload gambar baru
       if (_newImageFile != null) {
         await ApiService().uploadProductImage(
           productPublicId: widget.product.publicId,
@@ -197,7 +195,6 @@ class _EditProductPageState extends State<EditProductPage> {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            // Foto produk
             const Text(
               'Foto produk',
               style: TextStyle(
@@ -208,7 +205,7 @@ class _EditProductPageState extends State<EditProductPage> {
             ),
             const SizedBox(height: 8),
             GestureDetector(
-              onTap: _pickImage, // <--- Bisa diklik buat ganti foto
+              onTap: _pickImage,
               child: Container(
                 height: 160,
                 decoration: BoxDecoration(
@@ -218,33 +215,60 @@ class _EditProductPageState extends State<EditProductPage> {
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: _newImageFile != null
-                    ? Image.file(_newImageFile!, fit: BoxFit.cover, width: double.infinity)
+                    ? (kIsWeb
+                          ? Image.network(
+                              _newImageFile!.path,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            )
+                          : Image.file(
+                              _newImageFile!,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            ))
                     : (imageUrl != null
-                        ? Image.network(
-                            imageUrl,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            errorBuilder: (_, __, ___) => const Center(
-                              child: Icon(Icons.inventory_2_outlined,
-                                  color: muted, size: 48),
-                            ),
-                          )
-                        : const Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.add_a_photo_outlined, color: muted, size: 40),
-                                SizedBox(height: 8),
-                                Text('Tap untuk pilih foto', style: TextStyle(fontSize: 12, color: muted)),
-                              ],
-                            ),
-                          )),
+                          ? Image.network(
+                              imageUrl,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              errorBuilder: (_, _, _) => const Center(
+                                child: Icon(
+                                  Icons.inventory_2_outlined,
+                                  color: muted,
+                                  size: 48,
+                                ),
+                              ),
+                            )
+                          : const Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.add_a_photo_outlined,
+                                    color: muted,
+                                    size: 40,
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Tap untuk pilih foto',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: muted,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )),
               ),
             ),
             const SizedBox(height: 6),
             const Text(
               'Tap gambar untuk mengganti foto produk.',
-              style: TextStyle(fontSize: 10, color: muted, fontStyle: FontStyle.italic),
+              style: TextStyle(
+                fontSize: 10,
+                color: muted,
+                fontStyle: FontStyle.italic,
+              ),
             ),
             const SizedBox(height: 20),
 
@@ -297,7 +321,6 @@ class _EditProductPageState extends State<EditProductPage> {
             ),
             const SizedBox(height: 20),
 
-            // Kategori
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
               decoration: BoxDecoration(
@@ -307,7 +330,7 @@ class _EditProductPageState extends State<EditProductPage> {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                                    value: categories.any((c) => c.$1 == _selectedCategory)
+                  value: categories.any((c) => c.$1 == _selectedCategory)
                       ? _selectedCategory
                       : null,
                   isExpanded: true,
@@ -316,10 +339,9 @@ class _EditProductPageState extends State<EditProductPage> {
                     style: TextStyle(fontSize: 13, color: muted),
                   ),
                   items: categories
-                      .map((c) => DropdownMenuItem(
-                            value: c.$1,
-                            child: Text(c.$2),
-                          ))
+                      .map(
+                        (c) => DropdownMenuItem(value: c.$1, child: Text(c.$2)),
+                      )
                       .toList(),
                   onChanged: (v) => setState(() => _selectedCategory = v),
                 ),
@@ -327,7 +349,6 @@ class _EditProductPageState extends State<EditProductPage> {
             ),
             const SizedBox(height: 28),
 
-            // Submit
             SizedBox(
               height: 52,
               child: FilledButton(
@@ -359,13 +380,15 @@ class _EditProductPageState extends State<EditProductPage> {
             ),
             const SizedBox(height: 12),
 
-            // Tombol hapus
             SizedBox(
               height: 48,
               child: OutlinedButton.icon(
                 onPressed: _submitting ? null : _delete,
-                icon: const Icon(Icons.delete_outline,
-                    color: brandRed, size: 20),
+                icon: const Icon(
+                  Icons.delete_outline,
+                  color: brandRed,
+                  size: 20,
+                ),
                 label: const Text(
                   'Hapus Produk',
                   style: TextStyle(
@@ -456,5 +479,3 @@ class _Field extends StatelessWidget {
     );
   }
 }
-
-

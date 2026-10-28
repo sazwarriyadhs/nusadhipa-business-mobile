@@ -6,6 +6,8 @@ import '../widgets/heading.dart';
 import '../widgets/metric.dart';
 import '../widgets/panel.dart';
 import '../widgets/quick_action.dart';
+import '../widgets/app_skeleton.dart';
+import '../widgets/app_animated_entry.dart';
 import '../services/nav_service.dart';
 import 'add_product_page.dart';
 import 'market_insight_page.dart';
@@ -72,246 +74,288 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) => RefreshIndicator(
-        color: brandRed,
-        onRefresh: _loadData,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const BrandHeader(),
-            const Heading('Ringkasan bisnis', 'Data live dari marketplace'),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: GridView.count(
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 1.4,
-                children: [
-                  Metric(
+    color: brandRed,
+    onRefresh: _loadData,
+    child: ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        const BrandHeader(),
+        const Heading('Ringkasan bisnis', 'Data live dari marketplace'),
+
+        // ===== METRIC GRID (skeleton + stagger animation) =====
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1.4,
+            children: [
+              if (loading) ...[
+                const SkeletonMetric(),
+                const SkeletonMetric(),
+                const SkeletonMetric(),
+                const SkeletonMetric(),
+              ] else ...[
+                AppAnimatedEntry(
+                  delay: const Duration(milliseconds: 0),
+                  child: Metric(
                     'Produk aktif',
-                    loading ? '...' : '$totalProducts',
-                    loading ? 'Memuat' : 'Live dari API',
+                    '$totalProducts',
+                    'Live dari API',
                     Icons.inventory_2_outlined,
                     brandRed,
                   ),
-                  Metric(
+                ),
+                AppAnimatedEntry(
+                  delay: const Duration(milliseconds: 80),
+                  child: Metric(
                     'Kategori',
-                    loading ? '...' : '$totalCategories',
-                    loading ? 'Memuat' : 'Live dari API',
+                    '$totalCategories',
+                    'Live dari API',
                     Icons.category_outlined,
                     oceanBlue,
                   ),
-                  Metric(
+                ),
+                AppAnimatedEntry(
+                  delay: const Duration(milliseconds: 160),
+                  child: Metric(
                     'Mitra usaha',
-                    loading ? '...' : '$totalSellers',
-                    loading ? 'Memuat' : 'Live dari API',
+                    '$totalSellers',
+                    'Live dari API',
                     Icons.storefront_outlined,
                     orange,
                   ),
-                  const Metric(
+                ),
+                AppAnimatedEntry(
+                  delay: const Duration(milliseconds: 240),
+                  child: Metric(
                     'Status server',
                     'OK',
                     'Terhubung',
                     Icons.cloud_done_outlined,
                     emeraldGreen,
                   ),
+                ),
+              ],
+            ],
+          ),
+        ),
+
+        // ===== Highlight Banner (Premium) =====
+        AppAnimatedEntry(
+          delay: const Duration(milliseconds: 320),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: brandGradient,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: brandRed.withValues(alpha: 0.35),
+                    blurRadius: 22,
+                    offset: const Offset(0, 10),
+                  ),
                 ],
               ),
-            ),
-
-            // ===== Highlight Banner =====
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: brandGradient,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: brandRed.withValues(alpha: 0.35),
-                      blurRadius: 22,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: const Icon(
-                        Icons.workspace_premium_rounded,
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'STATUS TOKO',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 9,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.2,
-                            ),
-                          ),
-                          SizedBox(height: 3),
-                          Text(
-                            'Premium Partner',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: -0.3,
-                            ),
-                          ),
-                          SizedBox(height: 2),
-                          Text(
-                            'Prioritas tampil di katalog',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Icon(
-                      Icons.arrow_forward_rounded,
-                      color: Colors.white,
-                      size: 22,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const Heading('Akses cepat', 'Kelola bisnis dari satu aplikasi'),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Panel(
-                child: Column(
-                  children: [
-                    QuickAction(
-                      Icons.add_box_outlined,
-                      'Tambah produk',
-                      'Buat produk baru untuk katalog',
-                      () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const AddProductPage(),
-                          ),
-                        );
-                      },
-                    ),
-                    const Divider(color: line),
-                    QuickAction(
-                      Icons.receipt_long_outlined,
-                      'Kelola pesanan',
-                      'Buka tab Pesanan',
-                      () => NavService.switchTab(1),
-                    ),
-                    const Divider(color: line),
-                    QuickAction(
-                      Icons.palette_outlined,
-                      'Branding toko',
-                      'Logo, cover, dan identitas bisnis',
-                      () => NavService.switchTab(4),
-                    ),
-                    const Divider(color: line),
-                    QuickAction(
-                      Icons.assessment_outlined,
-                      'Laporan Keuangan',
-                      'Ringkasan pendapatan & transaksi',
-                      () async {
-                        // Ambil business dulu
-                        final business =
-                            await ApiService().getMyBusiness();
-                        if (!context.mounted) return;
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => FinancialReportPage(
-                              business: business,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    const Divider(color: line),
-                    QuickAction(
-                      Icons.insights_outlined,
-                      'Market insight',
-                      'Harga pangan & ikan terkini',
-                      () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const MarketInsightPage(),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const Heading('Insight pasar', 'Pantau harga komoditas terkini'),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  Expanded(
-                    child: _InsightCard(
-                      icon: '🍚',
-                      label: 'Beras Medium',
-                      value: 'Rp 14.012',
-                      trend: '-0.5%',
-                      trendUp: false,
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(
+                      Icons.workspace_premium_rounded,
+                      color: Colors.white,
+                      size: 28,
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: _InsightCard(
-                      icon: '🐟',
-                      label: 'Ikan Tongkol',
-                      value: 'Rp 40.449',
-                      trend: '+1.2%',
-                      trendUp: true,
+                  const SizedBox(width: 14),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'STATUS TOKO',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        SizedBox(height: 3),
+                        Text(
+                          'Premium Partner',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'Prioritas tampil di katalog',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                  const Icon(
+                    Icons.arrow_forward_rounded,
+                    color: Colors.white,
+                    size: 22,
                   ),
                 ],
               ),
             ),
+          ),
+        ),
 
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Text(
-                connected
-                    ? 'LIVE — Terhubung ke marketplace API (port 4000).'
-                    : 'OFFLINE — Tidak dapat terhubung ke server.',
-                style: TextStyle(
-                  color: connected ? emeraldGreen : brandRed,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  height: 1.5,
-                ),
+        // ===== Akses Cepat =====
+        AppAnimatedEntry(
+          delay: const Duration(milliseconds: 400),
+          child: const Heading('Akses cepat', 'Kelola bisnis dari satu aplikasi'),
+        ),
+        AppAnimatedEntry(
+          delay: const Duration(milliseconds: 450),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Panel(
+              child: Column(
+                children: [
+                  QuickAction(
+                    Icons.add_box_outlined,
+                    'Tambah produk',
+                    'Buat produk baru untuk katalog',
+                    () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const AddProductPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  const Divider(color: line),
+                  QuickAction(
+                    Icons.receipt_long_outlined,
+                    'Kelola pesanan',
+                    'Buka tab Pesanan',
+                    () => NavService.switchTab(1),
+                  ),
+                  const Divider(color: line),
+                  QuickAction(
+                    Icons.palette_outlined,
+                    'Branding toko',
+                    'Logo, cover, dan identitas bisnis',
+                    () => NavService.switchTab(4),
+                  ),
+                  const Divider(color: line),
+                  QuickAction(
+                    Icons.assessment_outlined,
+                    'Laporan Keuangan',
+                    'Ringkasan pendapatan & transaksi',
+                    () async {
+                      final business = await ApiService().getMyBusiness();
+                      if (!context.mounted) return;
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              FinancialReportPage(business: business),
+                        ),
+                      );
+                    },
+                  ),
+                  const Divider(color: line),
+                  QuickAction(
+                    Icons.insights_outlined,
+                    'Market insight',
+                    'Harga pangan & ikan terkini',
+                    () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const MarketInsightPage(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
-      );
+
+        // ===== Insight Pasar =====
+        AppAnimatedEntry(
+          delay: const Duration(milliseconds: 500),
+          child: const Heading(
+            'Insight pasar',
+            'Pantau harga komoditas terkini',
+          ),
+        ),
+        AppAnimatedEntry(
+          delay: const Duration(milliseconds: 550),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _InsightCard(
+                    icon: '🍚',
+                    label: 'Beras Medium',
+                    value: 'Rp 14.012',
+                    trend: '-0.5%',
+                    trendUp: false,
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: _InsightCard(
+                    icon: '🐟',
+                    label: 'Ikan Tongkol',
+                    value: 'Rp 40.449',
+                    trend: '+1.2%',
+                    trendUp: true,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        // ===== Status Koneksi =====
+        AppAnimatedEntry(
+          delay: const Duration(milliseconds: 600),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text(
+              connected
+                  ? 'LIVE — Terhubung ke marketplace API.'
+                  : 'OFFLINE — Tidak dapat terhubung ke server.',
+              style: TextStyle(
+                color: connected ? emeraldGreen : brandRed,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _InsightCard extends StatelessWidget {
@@ -331,17 +375,13 @@ class _InsightCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFFE5232E),
-            Color(0xFFC41E28),
-          ],
+          colors: [Color(0xFFE5232E), Color(0xFFC41E28)],
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
@@ -354,7 +394,6 @@ class _InsightCard extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Decorative circle (pojok kanan atas)
           Positioned(
             right: -20,
             top: -20,
@@ -379,7 +418,6 @@ class _InsightCard extends StatelessWidget {
               ),
             ),
           ),
-          // Content
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 14, 12, 14),
             child: Column(
@@ -394,15 +432,14 @@ class _InsightCard extends StatelessWidget {
                         color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text(
-                        icon,
-                        style: const TextStyle(fontSize: 22),
-                      ),
+                      child: Text(icon, style: const TextStyle(fontSize: 22)),
                     ),
                     const Spacer(),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(6),
@@ -446,4 +483,3 @@ class _InsightCard extends StatelessWidget {
     );
   }
 }
-

@@ -65,8 +65,7 @@ class _MarketInsightPageState extends State<MarketInsightPage> {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.insights_rounded,
-                        color: Colors.white, size: 26),
+                    Icon(Icons.insights_rounded, color: Colors.white, size: 26),
                     SizedBox(width: 10),
                     Text(
                       'HARGA PASAR HARI INI',
@@ -126,16 +125,18 @@ class _MarketInsightPageState extends State<MarketInsightPage> {
           const SizedBox(height: 16),
 
           // List
-          ...data.map((item) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: _InsightRow(
-                  icon: item.$1,
-                  name: item.$2,
-                  price: item.$3,
-                  trend: item.$4,
-                  trendUp: item.$5,
-                ),
-              )),
+          ...data.map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: _InsightRow(
+                icon: item.$1,
+                name: item.$2,
+                price: item.$3,
+                trend: item.$4,
+                trendUp: item.$5,
+              ),
+            ),
+          ),
 
           const SizedBox(height: 16),
           Container(
@@ -190,9 +191,7 @@ class _TabButton extends StatelessWidget {
           gradient: selected ? brandGradient : null,
           color: selected ? null : Colors.white,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: selected ? Colors.transparent : line,
-          ),
+          border: Border.all(color: selected ? Colors.transparent : line),
           boxShadow: selected
               ? [
                   BoxShadow(
@@ -305,7 +304,9 @@ class _InsightRow extends StatelessWidget {
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 4),
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: trendColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),

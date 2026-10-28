@@ -23,6 +23,8 @@ dependencies:
   shared_preferences: ^2.3.2
   url_launcher: ^6.3.3
   flutter_native_splash: ^2.4.7
+  flutter_map: ^8.3.2
+  latlong2: ^0.10.1
 
 dev_dependencies:
   flutter_test:
@@ -36,14 +38,19 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
-    - assets/branding/logo_nusadhipa.png
-    - assets/branding/sauri_logo.png
-    - assets/branding/Fresh Poultry Processing Showcase.png
+    - assets/branding/
+    - assets/placeholder.png
+    - assets/products/
 
 flutter_native_splash:
-  color: "#FFFFFF"
+  color: "#E5232E"
   image: "assets/images/logo.png"
+  android_gravity: center
+  ios_content_mode: scaleAspectFit
+  web_image_mode: scaleDown
+  fullscreen: true
+
   android_12:
     image: "assets/images/logo.png"
-    color: "#FFFFFF"
+    color: "#E5232E"
     icon_background_color: "#FFFFFF"

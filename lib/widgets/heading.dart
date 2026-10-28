@@ -13,11 +13,16 @@ class Heading extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(
-          fontSize: 25, fontWeight: FontWeight.w900, color: ink)),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.w900,
+            color: ink,
+          ),
+        ),
         const SizedBox(height: 5),
-        Text(subtitle, style: const TextStyle(
-          fontSize: 12, color: muted)),
+        Text(subtitle, style: const TextStyle(fontSize: 12, color: muted)),
       ],
     ),
   );
