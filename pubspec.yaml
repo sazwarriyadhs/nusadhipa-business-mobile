@@ -30,6 +30,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 dependency_overrides:
   archive: ^4.5.1
@@ -38,7 +39,11 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
-    - assets/branding/
+    - assets/branding/app_icon.png
+    - assets/branding/banner_sauri.jpg
+    - assets/branding/logo_nusadhipa.png
+    - assets/branding/sauri_logo.png
+    - assets/branding/Fresh Poultry Processing Showcase.png
     - assets/placeholder.png
     - assets/products/
 
@@ -54,3 +59,15 @@ flutter_native_splash:
     image: "assets/images/logo.png"
     color: "#E5232E"
     icon_background_color: "#FFFFFF"
+
+# ============================================================
+# KONFIGURASI APP ICON (TAMBAHAN BARU)
+# ============================================================
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/branding/app_icon.png"
+  min_sdk_android: 21
+  web:
+    generate: true
+    image_path: "assets/branding/app_icon.png"
