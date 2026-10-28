@@ -21,6 +21,10 @@ class _StorePageState extends State<StorePage> {
   File? _newLogo;
   File? _newCover;
 
+  // Data statistik
+  int _productCount = 0;
+  int _categoryCount = 0;
+
   @override
   void initState() {
     super.initState();
@@ -30,9 +34,24 @@ class _StorePageState extends State<StorePage> {
   Future<void> _loadProfile() async {
     try {
       final biz = await ApiService().getMyBusiness();
+      
+      // Ambil produk buat ngitung statistik
+      final products = await ApiService().getProducts(
+        business: biz.slug,
+        limit: 100,
+      );
+
+      final categories = products
+          .map((p) => p.categoryName)
+          .where((c) => c.isNotEmpty)
+          .toSet()
+          .toList();
+
       if (mounted) {
         setState(() {
           _business = biz;
+          _productCount = products.length;
+          _categoryCount = categories.length;
           _loading = false;
         });
       }
@@ -287,42 +306,35 @@ class _StorePageState extends State<StorePage> {
                     ),
                     const SizedBox(height: 16),
 
-                    // TOMBOL AKSI
-                    Row(
+                    // TOMBOL AKSI (Pakai Wrap biar nggak overflow / garis biru)
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
                       children: [
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () =>
-                                _openWhatsApp(_business!.phone ?? ''),
-                            icon: const Icon(Icons.chat, size: 16),
-                            label: const Text('Chat WhatsApp'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              foregroundColor: Colors.white,
-                            ),
+                        ElevatedButton.icon(
+                          onPressed: () => _openWhatsApp(_business!.phone ?? ''),
+                          icon: const Icon(Icons.chat, size: 16),
+                          label: const Text('Chat WhatsApp'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: () {},
-                            icon: const Icon(Icons.phone, size: 16),
-                            label: const Text('Telepon'),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: ink,
-                            ),
+                        OutlinedButton.icon(
+                          onPressed: () {},
+                          icon: const Icon(Icons.phone, size: 16),
+                          label: const Text('Telepon'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: ink,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () {},
-                            icon: const Icon(Icons.star, size: 16),
-                            label: const Text('Follow'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: brandRed,
-                              foregroundColor: Colors.white,
-                            ),
+                        ElevatedButton.icon(
+                          onPressed: () {},
+                          icon: const Icon(Icons.star, size: 16),
+                          label: const Text('Follow'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: brandRed,
+                            foregroundColor: Colors.white,
                           ),
                         ),
                       ],
@@ -337,9 +349,9 @@ class _StorePageState extends State<StorePage> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  _buildStatCard(Icons.inventory_2, '0', 'PRODUK'),
+                  _buildStatCard(Icons.inventory_2, '$_productCount', 'PRODUK'),
                   const SizedBox(width: 8),
-                  _buildStatCard(Icons.category, '0', 'KATEGORI'),
+                  _buildStatCard(Icons.category, '$_categoryCount', 'KATEGORI'),
                   const SizedBox(width: 8),
                   _buildStatCard(Icons.verified, 'Verified', 'STATUS'),
                   const SizedBox(width: 8),
