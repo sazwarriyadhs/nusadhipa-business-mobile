@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../config/theme.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
 import 'tenant_shell.dart';
@@ -45,9 +44,9 @@ class _SplashScreenState extends State<SplashScreen>
 
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (_, __, ___) =>
+        pageBuilder: (_, _, __) =>
             loggedIn ? const TenantShell() : const LoginScreen(),
-        transitionsBuilder: (_, animation, __, child) {
+        transitionsBuilder: (_, animation, _, child) {
           return FadeTransition(opacity: animation, child: child);
         },
         transitionDuration: const Duration(milliseconds: 600),
