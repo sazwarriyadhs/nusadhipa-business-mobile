@@ -17,6 +17,7 @@ dependencies:
   path_provider: ^2.1.4
   share_plus: ^10.0.0
   intl: ^0.20.2
+  google_fonts: ^6.2.1 
   image_picker: ^1.1.2
   image_cropper: ^8.0.2
   http_parser: ^4.1.0
@@ -25,6 +26,7 @@ dependencies:
   flutter_native_splash: ^2.4.7
   flutter_map: ^8.3.2
   latlong2: ^0.10.1
+  fl_chart: ^1.3.0
 
 dev_dependencies:
   flutter_test:
@@ -39,16 +41,12 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
-    - assets/branding/app_icon.png
-    - assets/branding/banner_sauri.jpg
-    - assets/branding/logo_nusadhipa.png
-    - assets/branding/sauri_logo.png
-    - assets/branding/Fresh Poultry Processing Showcase.png
+    - assets/branding/      # 👈 Ini otomatis membaca SEMUA file di dalamnya (termasuk logo baru)
     - assets/placeholder.png
     - assets/products/
 
 flutter_native_splash:
-  color: "#E5232E"
+  color: "#FFFFFF"
   image: "assets/images/logo.png"
   android_gravity: center
   ios_content_mode: scaleAspectFit
@@ -57,12 +55,9 @@ flutter_native_splash:
 
   android_12:
     image: "assets/images/logo.png"
-    color: "#E5232E"
+    color: "#FFFFFF"
     icon_background_color: "#FFFFFF"
 
-# ============================================================
-# KONFIGURASI APP ICON (TAMBAHAN BARU)
-# ============================================================
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true

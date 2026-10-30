@@ -47,10 +47,8 @@ class ApiService {
       final response = await http
           .get(uri, headers: headers)
           .timeout(const Duration(milliseconds: ApiConfig.kTimeoutMs));
-      
-      // Cek status code dulu
+
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        // Coba parsing error message dari body
         String errorMsg = 'API mengembalikan HTTP ${response.statusCode}';
         try {
           final errJson = jsonDecode(response.body);
@@ -62,8 +60,7 @@ class ApiService {
         } catch (_) {}
         throw ApiException(errorMsg, statusCode: response.statusCode);
       }
-      
-      // Parsing JSON
+
       try {
         final decoded = jsonDecode(response.body);
         if (decoded is! Map<String, dynamic>) {
@@ -173,6 +170,33 @@ class ApiService {
       throw ApiException('Format laporan tidak valid');
     }
     return FinancialReport.fromJson(data);
+  }
+
+  // ============================================================
+  // GET AVAILABLE COURIERS (radius filter)
+  // ============================================================
+  Future<List<dynamic>> getAvailableCouriers({
+    required double lat,
+    required double lng,
+    double radius = 5,
+  }) async {
+    final json = await _get('/courier/available?lat=$lat&lng=$lng&radius=$radius');
+    return (json['data'] as List<dynamic>?) ?? [];
+  }
+
+  // ============================================================
+  // ASSIGN COURIER TO ORDER
+  // ============================================================
+  Future<void> assignCourier(String orderPublicId, dynamic courierId) async {
+    final uri = Uri.parse('${ApiConfig.kApiBaseUrl}/orders/$orderPublicId/assign-courier');
+    final response = await http.post(
+      uri,
+      headers: await _getHeaders(),
+      body: jsonEncode({'courier_id': courierId}),
+    ).timeout(Duration(milliseconds: ApiConfig.kTimeoutMs));
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('HTTP ${response.statusCode}');
+    }
   }
 
   Future<Map<String, dynamic>> createProduct({
@@ -439,4 +463,38 @@ class ApiService {
       throw ApiException('Gagal upload: ${e.toString()}');
     }
   }
+
+  // ============================================================
+  // CLAIM PICKUP (Tenant klaim pickup order)
+  // ============================================================
+  Future<void> claimPickup(String orderPublicId) async {
+    final uri = Uri.parse('${ApiConfig.kApiBaseUrl}/orders/$orderPublicId/claim-pickup');
+    try {
+      final response = await http
+          .post(uri, headers: await _getHeaders())
+          .timeout(Duration(milliseconds: ApiConfig.kTimeoutMs));
+      
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        String errorMsg = 'Gagal klaim pickup (HTTP ${response.statusCode})';
+        try {
+          final errJson = jsonDecode(response.body);
+          if (errJson is Map && errJson['error'] != null) {
+            errorMsg = errJson['error'].toString();
+          } else if (errJson is Map && errJson['message'] != null) {
+            errorMsg = errJson['message'].toString();
+          }
+        } catch (_) {}
+        throw ApiException(errorMsg, statusCode: response.statusCode);
+      }
+    } on TimeoutException {
+      throw ApiException('Permintaan timeout. Periksa koneksi.');
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw ApiException('Gagal klaim pickup: ${e.toString()}');
+    }
+  }
+
 }
+
+
+

@@ -22,6 +22,11 @@ class Business {
   final String? status;
   final double? latitude;
   final double? longitude;
+  final String? halalCertificateNumber;
+  final String? instagramUrl;
+  final String? tiktokUrl;
+  final String? facebookUrl;
+  final String? websiteUrl;
 
   Business({
     required this.publicId,
@@ -47,6 +52,11 @@ class Business {
     this.status,
     this.latitude,
     this.longitude,
+    this.halalCertificateNumber,
+    this.instagramUrl,
+    this.tiktokUrl,
+    this.facebookUrl,
+    this.websiteUrl,
   });
 
   factory Business.fromJson(Map<String, dynamic> json) {
