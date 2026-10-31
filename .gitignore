@@ -34,3 +34,13 @@ _/backups/
 _backups/
 *.pyc
 __pycache__/
+
+# Backup & audit
+*.audit-backup
+.audit-fix-backup-*/
+
+# Build output
+*.apk
+*.aab
+app-release.apk
+build/

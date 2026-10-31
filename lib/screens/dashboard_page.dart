@@ -209,7 +209,7 @@ class _DashboardPageState extends State<DashboardPage> {
   // =========================================================================
   Widget _buildSummaryCard() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.only(top: 24, left: 20, right: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.cardNavy.withOpacity(0.95), 
@@ -396,7 +396,7 @@ class _DashboardPageState extends State<DashboardPage> {
   // =========================================================================
   Widget _buildKpiChart() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.only(top: 24, left: 20, right: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -522,7 +522,7 @@ class _DashboardPageState extends State<DashboardPage> {
   // =========================================================================
   Widget _buildBusinessBanner() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.only(top: 24, left: 20, right: 20),
       height: 110, 
       decoration: BoxDecoration(
         color: AppColors.darkNavy,

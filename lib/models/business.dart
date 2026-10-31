@@ -82,6 +82,7 @@ class Business {
       kbliName: json['kbli_name'],
       verificationStatus: json['verification_status'],
       status: json['status'],
+      halalCertificateNumber: json['halal_certificate_number'],
       latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
       longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
     );
