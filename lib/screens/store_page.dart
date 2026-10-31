@@ -21,7 +21,6 @@ class _StorePageState extends State<StorePage> {
   File? _newLogo;
   File? _newCover;
 
-  // Data statistik
   int _productCount = 0;
   int _categoryCount = 0;
 
@@ -34,8 +33,6 @@ class _StorePageState extends State<StorePage> {
   Future<void> _loadProfile() async {
     try {
       final biz = await ApiService().getMyBusiness();
-      
-      // Ambil produk buat ngitung statistik
       final products = await ApiService().getProducts(
         business: biz.slug,
         limit: 100,
@@ -306,7 +303,7 @@ class _StorePageState extends State<StorePage> {
                     ),
                     const SizedBox(height: 16),
 
-                    // TOMBOL AKSI (Pakai Wrap biar nggak overflow / garis biru)
+                    // TOMBOL AKSI
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
@@ -344,7 +341,7 @@ class _StorePageState extends State<StorePage> {
               ),
             ),
 
-            // ===== CARD STATISTIK =====
+            // ===== CARD STATISTIK (NEW DESIGN) =====
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -365,7 +362,7 @@ class _StorePageState extends State<StorePage> {
             ),
 
             const SizedBox(height: 24),
-            // ===== INFO BISNIS =====
+            // ===== INFO BISNIS (NEW DESIGN) =====
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -379,9 +376,9 @@ class _StorePageState extends State<StorePage> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: const Color(0xFF0F172A).withOpacity(0.95),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: line),
+                      border: Border.all(color: Colors.greenAccent.withOpacity(0.5), width: 1.5),
                     ),
                     child: Column(
                       children: [
@@ -389,9 +386,9 @@ class _StorePageState extends State<StorePage> {
                           'Badan Usaha',
                           _business!.legalName ?? '-',
                         ),
-                        const Divider(),
+                        const Divider(color: Colors.white24),
                         _buildInfoRow('NIB', _business!.nib ?? '-'),
-                        const Divider(),
+                        const Divider(color: Colors.white24),
                         _buildInfoRow('Alamat', _business!.address ?? '-'),
                       ],
                     ),
@@ -411,23 +408,23 @@ class _StorePageState extends State<StorePage> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFF0F172A).withOpacity(0.9),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: line),
+          border: Border.all(color: Colors.greenAccent.withOpacity(0.5), width: 1),
         ),
         child: Column(
           children: [
-            Icon(icon, color: brandRed, size: 24),
+            Icon(icon, color: Colors.white, size: 24),
             const SizedBox(height: 8),
             Text(
               value,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.white),
             ),
             Text(
               label,
               style: const TextStyle(
                 fontSize: 9,
-                color: muted,
+                color: Colors.white70,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -445,14 +442,14 @@ class _StorePageState extends State<StorePage> {
           flex: 2,
           child: Text(
             label,
-            style: const TextStyle(fontSize: 12, color: muted),
+            style: const TextStyle(fontSize: 12, color: Colors.white70),
           ),
         ),
         Expanded(
           flex: 3,
           child: Text(
             value,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
       ],

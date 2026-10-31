@@ -67,6 +67,7 @@ class Business {
   });
 
   factory Business.fromJson(Map<String, dynamic> json) {
+    print('PARSING BUSINESS: $json'); 
     return Business(
       publicId: json['public_id'] ?? '',
       businessName: json['business_name'] ?? '',

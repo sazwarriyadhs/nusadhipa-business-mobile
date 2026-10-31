@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:math'; // Tambahan untuk generate data grafik dinamis
+import 'dart:math';
 import '../models/business.dart';
 import '../config/business_type.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,8 +8,8 @@ import 'package:fl_chart/fl_chart.dart';
 import '../core/theme/app_theme.dart'; 
 import '../services/api_service.dart';
 import '../services/nav_service.dart';
-import '../services/auth_service.dart'; // Import untuk Logout
-import 'login_screen.dart'; // Sesuaikan dengan nama file Login kamu
+import '../services/auth_service.dart';
+import 'login_screen.dart';
 import 'add_product_page.dart';
 import 'market_insight_page.dart';
 import 'documents/financial_report_page.dart';
@@ -29,8 +29,6 @@ class _DashboardPageState extends State<DashboardPage> {
   bool connected = false;
   String tenantName = 'Memuat Data...';
   Business? businessData;
-  
-  // List untuk menyimpan data grafik dinamis
   List<FlSpot> chartSpots = [];
 
   @override
@@ -49,7 +47,6 @@ class _DashboardPageState extends State<DashboardPage> {
       final categories = products.map((p) => p.categoryName).where((c) => c.isNotEmpty).toSet().toList();
       final sellers = <String>{business.businessName};
 
-      // Generate data grafik dinamis (simulasi harga komoditas)
       final random = Random();
       final generatedSpots = List.generate(7, (index) => 
         FlSpot(index.toDouble(), (40 + random.nextInt(50)).toDouble())
@@ -65,12 +62,8 @@ class _DashboardPageState extends State<DashboardPage> {
         loading = false;
         connected = true;
       });
-
-      // DEBUG: Cek di terminal apakah API ngirim data halal atau nggak
-      debugPrint("DEBUG HALAL: ${business.halalCertificateNumber}");
-
     } catch (e) {
-      debugPrint("ERROR LOAD DATA: $e");
+      print("ERROR LOAD DATA: $e");
       if (!mounted) return;
       setState(() {
         loading = false;
@@ -103,7 +96,6 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                 ],
               ),
-              
               const SizedBox(height: 220),
               _buildKpiChart(),
               const SizedBox(height: 16),
@@ -124,10 +116,10 @@ class _DashboardPageState extends State<DashboardPage> {
     return Container(
       height: 340,
       width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.darkNavy,
+      decoration: const BoxDecoration(
+        color: Color(0xFF0F172A), // fallback color
         image: DecorationImage(
-          image: NetworkImage(businessData?.bannerUrl ?? 'https://res.cloudinary.com/wqytmco9/image/upload/v1793337981/coverpempek.jpg'),
+          image: AssetImage('assets/branding/banner_sauri.jpg'), 
           fit: BoxFit.cover,
           alignment: Alignment.bottomCenter,
         ),
@@ -138,9 +130,9 @@ class _DashboardPageState extends State<DashboardPage> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.darkNavy.withOpacity(0.95),
-              AppColors.darkNavy.withOpacity(0.4),
-              AppColors.darkNavy.withOpacity(0.9),
+              const Color(0xFF0F172A).withOpacity(0.95),
+              const Color(0xFF0F172A).withOpacity(0.4),
+              const Color(0xFF0F172A).withOpacity(0.9),
             ],
             stops: const [0.0, 0.4, 1.0],
           ),
@@ -161,7 +153,6 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                     Row(
                       children: [
-                        // Ikon Lonceng Notifikasi
                         Stack(
                           children: [
                             const Icon(Icons.notifications_none, color: Colors.white, size: 28),
@@ -175,9 +166,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             )
                           ],
                         ),
-                        const SizedBox(width: 16), // Jarak antara lonceng dan logout
-                        
-                        // Tombol Logout
+                        const SizedBox(width: 16),
                         GestureDetector(
                           onTap: () async {
                             final confirm = await showDialog<bool>(
@@ -199,13 +188,11 @@ class _DashboardPageState extends State<DashboardPage> {
                                 ],
                               ),
                             );
-
                             if (confirm == true) {
-                              await AuthService().logout(); // Hapus token
+                              await AuthService().logout();
                               if (context.mounted) {
-                                // Balik ke halaman login (hapus semua history route)
                                 Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(builder: (_) => const LoginScreen()), // Sesuaikan dengan nama class Login kamu
+                                  MaterialPageRoute(builder: (_) => const LoginScreen()),
                                   (route) => false,
                                 );
                               }
@@ -301,7 +288,13 @@ class _DashboardPageState extends State<DashboardPage> {
                       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: businessData?.logoUrl != null ? Image.network(businessData!.logoUrl!, fit: BoxFit.contain, errorBuilder: (context, error, stackTrace) { return Text(businessData!.businessName.substring(0, 2).toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)); }) : Text(businessData?.businessName.substring(0, 2).toUpperCase() ?? 'PT', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
+                        child: Image.asset(
+                          'assets/branding/sauri_logo.png', 
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Text(businessData!.businessName.substring(0, 2).toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
+                          }
+                        ),
                       ),
                     ),
                   ],
@@ -317,7 +310,6 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                
                 Row(
                   children: [
                     _buildMetricItem(Icons.grid_view_rounded, 'KATEGORI', '$totalCategories'),
@@ -327,39 +319,54 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 const SizedBox(height: 12),
 
-                // BADGE HALAL
+                // BADGE HALAL (NEW DESIGN)
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                   decoration: BoxDecoration(
-                    color: Colors.transparent,
+                    color: Colors.white.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white.withOpacity(0.2)),
+                    border: Border.all(color: AppColors.successGreen.withOpacity(0.5), width: 1.5),
                   ),
                   child: Row(
                     children: [
                       Image.asset(
                         'assets/branding/halalmerah.png',
-                        height: 24,
+                        height: 32, // Sedikit dibesarkan biar jelas
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) => 
-                            const Icon(Icons.verified, color: AppColors.primaryRed, size: 24),
+                            const Icon(Icons.verified, color: AppColors.primaryRed, size: 32),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 14),
                       Expanded(
-                        child: Text(
-                          (businessData?.halalCertificateNumber != null && businessData!.halalCertificateNumber!.isNotEmpty) 
-                              ? 'Halal: ${businessData!.halalCertificateNumber}' 
-                              : 'Belum ada sertifikat halal', 
-                          style: GoogleFonts.poppins(
-                            color: Colors.white, 
-                            fontWeight: FontWeight.bold, 
-                            fontSize: 13
-                          ),
-                          textAlign: TextAlign.right,
-                          overflow: TextOverflow.ellipsis,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'SERTIFIKAT HALAL',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white70,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              (businessData?.halalCertificateNumber != null && businessData!.halalCertificateNumber!.isNotEmpty) 
+                                  ? businessData!.halalCertificateNumber! 
+                                  : 'Belum Terverifikasi', 
+                              style: GoogleFonts.poppins(
+                                color: Colors.white, 
+                                fontWeight: FontWeight.bold, 
+                                fontSize: 15
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                      if (businessData?.halalCertificateNumber != null && businessData!.halalCertificateNumber!.isNotEmpty)
+                        const Icon(Icons.verified, color: AppColors.successGreen, size: 28),
                     ],
                   ),
                 ),

@@ -121,13 +121,18 @@ class ApiService {
   }
 
   Future<Business> getMyBusiness() async {
-    final json = await _get(ApiConfig.kBusinessMe);
+    // SEMENTARA: Tembak ke endpoint publik yang udah pasti bener
+    final json = await _get('/businesses');
     final data = json['data'];
-    if (data is! Map<String, dynamic>) {
-      final errMsg = json['error']?.toString() ?? 'Format data business tidak valid';
-      throw ApiException(errMsg);
+    if (data is! List) {
+      throw ApiException('Format data business tidak valid');
     }
-    return Business.fromJson(data);
+    final businessData = data.firstWhere(
+      (b) => b['business_name'].toString().toUpperCase().contains('FRESH MARKET'),
+      orElse: () => data[0],
+    );
+    print('ISI JSON API: $businessData');
+    return Business.fromJson(Map<String, dynamic>.from(businessData));
   }
 
   Future<List<Order>> getOrders({String? status}) async {
