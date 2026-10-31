@@ -300,7 +300,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       // Hanya ID Sertifikat
                       Expanded(
                         child: Text(
-                          businessData?.halalCertificateNumber ?? 'Belum ada sertifikat halal', 
+                          businessData?.halalCertificateUrl != null && businessData!.halalCertificateUrl!.isNotEmpty ? 'Sertifikat Halal Terverifikasi' : 'Belum ada sertifikat halal', 
                           style: GoogleFonts.poppins(
                             color: Colors.white, 
                             fontWeight: FontWeight.bold, 

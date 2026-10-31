@@ -22,7 +22,10 @@ class Business {
   final String? status;
   final double? latitude;
   final double? longitude;
-  final String? halalCertificateNumber;
+  
+  // Diubah dari Number ke Url karena API mengirim Link Gambar
+  final String? halalCertificateUrl; 
+  
   final String? instagramUrl;
   final String? tiktokUrl;
   final String? facebookUrl;
@@ -52,7 +55,7 @@ class Business {
     this.status,
     this.latitude,
     this.longitude,
-    this.halalCertificateNumber,
+    this.halalCertificateUrl, 
     this.instagramUrl,
     this.tiktokUrl,
     this.facebookUrl,
@@ -82,7 +85,10 @@ class Business {
       kbliName: json['kbli_name'],
       verificationStatus: json['verification_status'],
       status: json['status'],
-      halalCertificateNumber: json['halal_certificate_number'],
+      
+      // Diubah menyesuaikan key JSON dari backend
+      halalCertificateUrl: json['halal_certificate_url'], 
+      
       latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
       longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
     );
