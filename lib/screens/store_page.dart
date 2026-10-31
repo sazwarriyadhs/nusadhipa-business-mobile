@@ -117,7 +117,6 @@ class _StorePageState extends State<StorePage> {
     }
 
     final coverUrl = ApiConfig.resolveImageUrl(_business!.bannerUrl);
-    final logoUrl = ApiConfig.resolveImageUrl(_business!.logoUrl);
 
     return Scaffold(
       backgroundColor: canvas,
@@ -178,170 +177,171 @@ class _StorePageState extends State<StorePage> {
 
             // ===== LOGO & NAMA TOKO =====
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Transform.translate(
-                offset: const Offset(0, -40),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        GestureDetector(
-                          onTap: _uploading ? null : () => _pickImage(true),
-                          child: Container(
-                            width: 90,
-                            height: 90,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 4),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.2),
-                                  blurRadius: 10,
-                                ),
-                              ],
-                              image: DecorationImage(
-                                image: _newLogo != null
-                                    ? FileImage(_newLogo!)
-                                    : (logoUrl != null
-                                              ? NetworkImage(logoUrl)
-                                              : const AssetImage(
-                                                  'assets/placeholder.png',
-                                                ))
-                                          as ImageProvider,
-                                fit: BoxFit.cover,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                        onTap: _uploading ? null : () => _pickImage(true),
+                        child: Container(
+                          width: 90,
+                          height: 90,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 4),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.2),
+                                blurRadius: 10,
                               ),
-                            ),
-                            child: Align(
-                              alignment: Alignment.bottomRight,
-                              child: CircleAvatar(
-                                radius: 14,
-                                backgroundColor: Colors.black54,
-                                child: const Icon(
-                                  Icons.camera_alt,
-                                  color: Colors.white,
-                                  size: 16,
-                                ),
+                            ],
+                            image: _newLogo != null
+                                ? DecorationImage(
+                                    image: FileImage(_newLogo!),
+                                    fit: BoxFit.cover,
+                                  )
+                                : const DecorationImage(
+                                    image: AssetImage(
+                                      'assets/branding/sauri_logo.png',
+                                    ),
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.bottomRight,
+                            child: CircleAvatar(
+                              radius: 14,
+                              backgroundColor: Colors.black54,
+                              child: const Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                                size: 16,
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  _business!.businessName,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w900,
-                                    height: 1.2,
-                                  ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _business!.businessName,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                  height: 1.2,
                                 ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.location_on,
-                                      color: brandRed,
-                                      size: 14,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
+                                maxLines: 3,
+                                overflow: TextOverflow.visible,
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.location_on,
+                                    color: brandRed,
+                                    size: 14,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
                                       '${_business!.city}, ${_business!.province}',
                                       style: const TextStyle(
                                         fontSize: 12,
                                         color: muted,
                                       ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-
-                    // BADGE
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
                       ),
-                      decoration: BoxDecoration(
-                        color: brandRed.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.verified, color: brandRed, size: 14),
-                          SizedBox(width: 4),
-                          Text(
-                            'TERVERIFIKASI AHU & OSS',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: brandRed,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
 
-                    // INFO NIB & NPWP
-                    Text(
-                      'NIB: ${_business!.nib ?? '-'}   NPWP: ${_business!.taxNumber ?? '-'}',
-                      style: const TextStyle(fontSize: 11, color: muted),
+                  // BADGE
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
                     ),
-                    const SizedBox(height: 16),
-
-                    // TOMBOL AKSI
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                    decoration: BoxDecoration(
+                      color: brandRed.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        ElevatedButton.icon(
-                          onPressed: () => _openWhatsApp(_business!.phone ?? ''),
-                          icon: const Icon(Icons.chat, size: 16),
-                          label: const Text('Chat WhatsApp'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                          ),
-                        ),
-                        OutlinedButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.phone, size: 16),
-                          label: const Text('Telepon'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: ink,
-                          ),
-                        ),
-                        ElevatedButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.star, size: 16),
-                          label: const Text('Follow'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: brandRed,
-                            foregroundColor: Colors.white,
+                        Icon(Icons.verified, color: brandRed, size: 14),
+                        SizedBox(width: 4),
+                        Text(
+                          'TERVERIFIKASI AHU & OSS',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: brandRed,
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // INFO NIB & NPWP
+                  Text(
+                    'NIB: ${_business!.nib ?? '-'}   NPWP: ${_business!.npwpDisplay}',
+                    style: const TextStyle(fontSize: 11, color: muted),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // TOMBOL AKSI
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () => _openWhatsApp(_business!.phone ?? ''),
+                        icon: const Icon(Icons.chat, size: 16),
+                        label: const Text('Chat WhatsApp'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                      OutlinedButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(Icons.phone, size: 16),
+                        label: const Text('Telepon'),
+                        style: OutlinedButton.styleFrom(foregroundColor: ink),
+                      ),
+                      ElevatedButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(Icons.star, size: 16),
+                        label: const Text('Follow'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: brandRed,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
 
-            // ===== CARD STATISTIK (NEW DESIGN) =====
+            // ===== CARD STATISTIK =====
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -362,9 +362,9 @@ class _StorePageState extends State<StorePage> {
             ),
 
             const SizedBox(height: 24),
-            // ===== INFO BISNIS (NEW DESIGN) =====
+            // ===== INFO BISNIS =====
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -378,7 +378,10 @@ class _StorePageState extends State<StorePage> {
                     decoration: BoxDecoration(
                       color: const Color(0xFF0F172A).withOpacity(0.95),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.greenAccent.withOpacity(0.5), width: 1.5),
+                      border: Border.all(
+                        color: Colors.greenAccent.withOpacity(0.5),
+                        width: 1.5,
+                      ),
                     ),
                     child: Column(
                       children: [
@@ -388,6 +391,8 @@ class _StorePageState extends State<StorePage> {
                         ),
                         const Divider(color: Colors.white24),
                         _buildInfoRow('NIB', _business!.nib ?? '-'),
+                        const Divider(color: Colors.white24),
+                        _buildInfoRow('NPWP', _business!.npwpDisplay),
                         const Divider(color: Colors.white24),
                         _buildInfoRow('Alamat', _business!.address ?? '-'),
                       ],
@@ -410,7 +415,10 @@ class _StorePageState extends State<StorePage> {
         decoration: BoxDecoration(
           color: const Color(0xFF0F172A).withOpacity(0.9),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.greenAccent.withOpacity(0.5), width: 1),
+          border: Border.all(
+            color: Colors.greenAccent.withOpacity(0.5),
+            width: 1,
+          ),
         ),
         child: Column(
           children: [
@@ -418,7 +426,11 @@ class _StorePageState extends State<StorePage> {
             const SizedBox(height: 8),
             Text(
               value,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.white),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+              ),
             ),
             Text(
               label,
@@ -449,7 +461,11 @@ class _StorePageState extends State<StorePage> {
           flex: 3,
           child: Text(
             value,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
         ),
       ],

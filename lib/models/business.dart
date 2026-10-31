@@ -22,12 +22,12 @@ class Business {
   final String? status;
   final double? latitude;
   final double? longitude;
-  
+
   // Tiga field untuk halal
   final String? halalCertificateNumber;
   final String? halalCertificateUrl;
   final String? halalOwnerName;
-  
+
   final String? instagramUrl;
   final String? tiktokUrl;
   final String? facebookUrl;
@@ -67,7 +67,7 @@ class Business {
   });
 
   factory Business.fromJson(Map<String, dynamic> json) {
-    print('PARSING BUSINESS: $json'); 
+    print('PARSING BUSINESS: $json');
     return Business(
       publicId: json['public_id'] ?? '',
       businessName: json['business_name'] ?? '',
@@ -90,32 +90,54 @@ class Business {
       kbliName: json['kbli_name'],
       verificationStatus: json['verification_status'],
       status: json['status'],
-      
+
       // Nangkep dari API
-      halalCertificateNumber: json['halal_certificate_number'], 
+      halalCertificateNumber: json['halal_certificate_number'],
       halalCertificateUrl: json['halal_certificate_url'],
       halalOwnerName: json['halal_owner_name'],
-      
-      latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
-      longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
+
+      latitude: json['latitude'] != null
+          ? double.tryParse(json['latitude'].toString())
+          : null,
+      longitude: json['longitude'] != null
+          ? double.tryParse(json['longitude'].toString())
+          : null,
     );
   }
 
   // GETTERS
+  String get npwpDisplay {
+    final primary = npwp?.trim();
+    if (primary != null && primary.isNotEmpty) return primary;
+
+    final fallback = taxNumber?.trim();
+    if (fallback != null && fallback.isNotEmpty) return fallback;
+
+    return '-';
+  }
+
   String get locationDisplay {
-    final parts = [city, province].where((e) => e != null && e.isNotEmpty).toList();
+    final parts = [
+      city,
+      province,
+    ].where((e) => e != null && e.isNotEmpty).toList();
     return parts.isEmpty ? 'Lokasi belum diisi' : parts.join(', ');
   }
 
   bool get isVerified => verificationStatus == 'verified';
-  
+
   String get businessTypeDisplay {
     switch (businessType) {
-      case 'umkm': return 'UMKM';
-      case 'retailer': return 'Retailer';
-      case 'supplier': return 'Supplier';
-      case 'manufacturer': return 'Manufacturer';
-      default: return businessType.toUpperCase();
+      case 'umkm':
+        return 'UMKM';
+      case 'retailer':
+        return 'Retailer';
+      case 'supplier':
+        return 'Supplier';
+      case 'manufacturer':
+        return 'Manufacturer';
+      default:
+        return businessType.toUpperCase();
     }
   }
 }
