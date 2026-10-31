@@ -23,8 +23,10 @@ class Business {
   final double? latitude;
   final double? longitude;
   
-  // Diubah dari Number ke Url karena API mengirim Link Gambar
-  final String? halalCertificateUrl; 
+  // Tiga field untuk halal
+  final String? halalCertificateNumber;
+  final String? halalCertificateUrl;
+  final String? halalOwnerName;
   
   final String? instagramUrl;
   final String? tiktokUrl;
@@ -55,7 +57,9 @@ class Business {
     this.status,
     this.latitude,
     this.longitude,
-    this.halalCertificateUrl, 
+    this.halalCertificateNumber,
+    this.halalCertificateUrl,
+    this.halalOwnerName,
     this.instagramUrl,
     this.tiktokUrl,
     this.facebookUrl,
@@ -86,18 +90,17 @@ class Business {
       verificationStatus: json['verification_status'],
       status: json['status'],
       
-      // Diubah menyesuaikan key JSON dari backend
-      halalCertificateUrl: json['halal_certificate_url'], 
+      // Nangkep dari API
+      halalCertificateNumber: json['halal_certificate_number'], 
+      halalCertificateUrl: json['halal_certificate_url'],
+      halalOwnerName: json['halal_owner_name'],
       
       latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
       longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
     );
   }
 
-  // ============================================================
-  // GETTERS (Buat nampilin data di UI)
-  // ============================================================
-  
+  // GETTERS
   String get locationDisplay {
     final parts = [city, province].where((e) => e != null && e.isNotEmpty).toList();
     return parts.isEmpty ? 'Lokasi belum diisi' : parts.join(', ');

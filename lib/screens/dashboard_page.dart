@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math'; // Tambahan untuk generate data grafik dinamis
 import '../models/business.dart';
 import '../config/business_type.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,6 +8,8 @@ import 'package:fl_chart/fl_chart.dart';
 import '../core/theme/app_theme.dart'; 
 import '../services/api_service.dart';
 import '../services/nav_service.dart';
+import '../services/auth_service.dart'; // Import untuk Logout
+import 'login_screen.dart'; // Sesuaikan dengan nama file Login kamu
 import 'add_product_page.dart';
 import 'market_insight_page.dart';
 import 'documents/financial_report_page.dart';
@@ -26,6 +29,9 @@ class _DashboardPageState extends State<DashboardPage> {
   bool connected = false;
   String tenantName = 'Memuat Data...';
   Business? businessData;
+  
+  // List untuk menyimpan data grafik dinamis
+  List<FlSpot> chartSpots = [];
 
   @override
   void initState() {
@@ -43,16 +49,28 @@ class _DashboardPageState extends State<DashboardPage> {
       final categories = products.map((p) => p.categoryName).where((c) => c.isNotEmpty).toSet().toList();
       final sellers = <String>{business.businessName};
 
+      // Generate data grafik dinamis (simulasi harga komoditas)
+      final random = Random();
+      final generatedSpots = List.generate(7, (index) => 
+        FlSpot(index.toDouble(), (40 + random.nextInt(50)).toDouble())
+      );
+
       if (!mounted) return;
       setState(() {
         tenantName = business.businessName.toUpperCase();
         totalProducts = products.length;
         totalCategories = categories.length;
         totalSellers = sellers.length;
+        chartSpots = generatedSpots;
         loading = false;
         connected = true;
       });
-    } catch (_) {
+
+      // DEBUG: Cek di terminal apakah API ngirim data halal atau nggak
+      debugPrint("DEBUG HALAL: ${business.halalCertificateNumber}");
+
+    } catch (e) {
+      debugPrint("ERROR LOAD DATA: $e");
       if (!mounted) return;
       setState(() {
         loading = false;
@@ -73,7 +91,6 @@ class _DashboardPageState extends State<DashboardPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // === HEADER & CARD DITUMPUK ===
               Stack(
                 clipBehavior: Clip.none,
                 children: [
@@ -87,22 +104,13 @@ class _DashboardPageState extends State<DashboardPage> {
                 ],
               ),
               
-              // Spasi aman di bawah card
               const SizedBox(height: 220),
-
-              // === GRAFIK KPI ===
               _buildKpiChart(),
               const SizedBox(height: 16),
-
-              // === BANNER ===
               _buildBusinessBanner(),
               const SizedBox(height: 20),
-
-              // === MENU OPERASIONAL ===
               _buildOperationalMenu(),
               const SizedBox(height: 24),
-
-              // === JEJARING UMKM ===
               _buildNetworkSection(),
               const SizedBox(height: 100),
             ],
@@ -112,9 +120,6 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // =========================================================================
-  // 1. BACKGROUND ATAS
-  // =========================================================================
   Widget _buildTopBackground() {
     return Container(
       height: 340,
@@ -154,17 +159,67 @@ class _DashboardPageState extends State<DashboardPage> {
                       height: 45,
                       fit: BoxFit.contain,
                     ),
-                    Stack(
+                    Row(
                       children: [
-                        const Icon(Icons.notifications_none, color: Colors.white, size: 28),
-                        Positioned(
-                          right: 0, top: 0,
+                        // Ikon Lonceng Notifikasi
+                        Stack(
+                          children: [
+                            const Icon(Icons.notifications_none, color: Colors.white, size: 28),
+                            Positioned(
+                              right: 0, top: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(color: AppColors.primaryRed, shape: BoxShape.circle),
+                                child: const Text('3', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(width: 16), // Jarak antara lonceng dan logout
+                        
+                        // Tombol Logout
+                        GestureDetector(
+                          onTap: () async {
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                title: Text('Konfirmasi Logout', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                                content: Text('Apakah Anda yakin ingin keluar dari akun ini?', style: GoogleFonts.poppins()),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, false),
+                                    child: Text('Batal', style: GoogleFonts.poppins(color: Colors.grey)),
+                                  ),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryRed),
+                                    onPressed: () => Navigator.pop(context, true),
+                                    child: Text('Logout', style: GoogleFonts.poppins(color: Colors.white)),
+                                  ),
+                                ],
+                              ),
+                            );
+
+                            if (confirm == true) {
+                              await AuthService().logout(); // Hapus token
+                              if (context.mounted) {
+                                // Balik ke halaman login (hapus semua history route)
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(builder: (_) => const LoginScreen()), // Sesuaikan dengan nama class Login kamu
+                                  (route) => false,
+                                );
+                              }
+                            }
+                          },
                           child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(color: AppColors.primaryRed, shape: BoxShape.circle),
-                            child: const Text('3', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.logout, color: Colors.white, size: 20),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ],
@@ -204,9 +259,6 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // =========================================================================
-  // 2. CARD RINGKASAN BISNIS (DENGAN BADGE)
-  // =========================================================================
   Widget _buildSummaryCard() {
     return Container(
       margin: const EdgeInsets.only(top: 24, left: 20, right: 20),
@@ -266,7 +318,6 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 const SizedBox(height: 20),
                 
-                // KATEGORI & TENANT
                 Row(
                   children: [
                     _buildMetricItem(Icons.grid_view_rounded, 'KATEGORI', '$totalCategories'),
@@ -276,8 +327,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 const SizedBox(height: 12),
 
-                // BADGE B2B, RETAIL, HALAL, ID SERTIFIKAT
-                                                // BADGE ID SERTIFIKAT HALAL (FULL WIDTH)
+                // BADGE HALAL
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -288,7 +338,6 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                   child: Row(
                     children: [
-                      // Gambar Logo Halal Merah
                       Image.asset(
                         'assets/branding/halalmerah.png',
                         height: 24,
@@ -297,10 +346,11 @@ class _DashboardPageState extends State<DashboardPage> {
                             const Icon(Icons.verified, color: AppColors.primaryRed, size: 24),
                       ),
                       const SizedBox(width: 12),
-                      // Hanya ID Sertifikat
                       Expanded(
                         child: Text(
-                          businessData?.halalCertificateUrl != null && businessData!.halalCertificateUrl!.isNotEmpty ? 'Sertifikat Halal Terverifikasi' : 'Belum ada sertifikat halal', 
+                          (businessData?.halalCertificateNumber != null && businessData!.halalCertificateNumber!.isNotEmpty) 
+                              ? 'Halal: ${businessData!.halalCertificateNumber}' 
+                              : 'Belum ada sertifikat halal', 
                           style: GoogleFonts.poppins(
                             color: Colors.white, 
                             fontWeight: FontWeight.bold, 
@@ -315,7 +365,6 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 const SizedBox(height: 16),
                 
-                // STATUS API
                 Row(
                   children: [
                     Icon(Icons.check_circle, color: connected ? AppColors.successGreen : Colors.red, size: 14),
@@ -360,40 +409,6 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget _buildBadge(IconData icon, String label) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withOpacity(0.2)),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(color: AppColors.primaryRed, borderRadius: BorderRadius.circular(6)),
-              child: Icon(icon, color: Colors.white, size: 16),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              label, 
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w600), 
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // =========================================================================
-  // 3. GRAFIK KPI / TREN PASAR
-  // =========================================================================
   Widget _buildKpiChart() {
     return Container(
       margin: const EdgeInsets.only(top: 24, left: 20, right: 20),
@@ -474,15 +489,9 @@ class _DashboardPageState extends State<DashboardPage> {
                 maxY: 100,
                 lineBarsData: [
                   LineChartBarData(
-                    spots: const [
-                      FlSpot(0, 30),
-                      FlSpot(1, 45),
-                      FlSpot(2, 35),
-                      FlSpot(3, 60),
-                      FlSpot(4, 55),
-                      FlSpot(5, 80),
-                      FlSpot(6, 75),
-                    ],
+                    spots: chartSpots.isEmpty 
+                        ? const [FlSpot(0, 0)]
+                        : chartSpots,
                     isCurved: true,
                     color: AppColors.primaryRed,
                     barWidth: 4,
@@ -517,9 +526,6 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // =========================================================================
-  // 4. BANNER BUSINESS
-  // =========================================================================
   Widget _buildBusinessBanner() {
     return Container(
       margin: const EdgeInsets.only(top: 24, left: 20, right: 20),
@@ -571,9 +577,6 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // =========================================================================
-  // 5. MENU OPERASIONAL
-  // =========================================================================
   Widget _buildOperationalMenu() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -588,7 +591,7 @@ class _DashboardPageState extends State<DashboardPage> {
           _buildMenuItem(Icons.diamond_rounded, 'Identitas Toko', 'Logo dan branding toko Anda', AppColors.primaryRed, () => NavService.switchTab(4)),
           _buildMenuItem(Icons.account_balance_wallet_rounded, 'Keuangan', 'Laporan bisnis dan keuangan', AppColors.darkNavy, () async {
             final business = await ApiService().getMyBusiness();
-      setState(() { businessData = business; tenantName = business.businessName; });
+            setState(() { businessData = business; tenantName = business.businessName; });
             if (!context.mounted) return;
             Navigator.of(context).push(MaterialPageRoute(builder: (_) => FinancialReportPage(business: business)));
           }),
@@ -621,9 +624,6 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // =========================================================================
-  // 6. JEJARING UMKM
-  // =========================================================================
   Widget _buildNetworkSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -670,12 +670,3 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
