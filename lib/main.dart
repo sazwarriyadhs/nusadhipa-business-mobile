@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'config/theme.dart';
-import 'services/auth_service.dart';
 import 'screens/splash_screen.dart';
+import 'screens/pricing_simulator_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +19,11 @@ class NusadhipaBusinessApp extends StatelessWidget {
       title: 'NUSA-DHIPA Business',
       debugShowCheckedModeBanner: false,
       theme: buildNusadhipaTheme(),
-      home: const SplashScreen(), // <--- Tanpa isLoggedIn
+      home: const SplashScreen(),
+      routes: {
+        '/pricing-simulator': (context) => PricingSimulatorScreen(),
+      }, // <--- Tanpa isLoggedIn
     );
   }
 }
+

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import '../models/business.dart';
-import '../config/business_type.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
-
 import '../core/theme/app_theme.dart'; 
 import '../services/api_service.dart';
 import '../services/nav_service.dart';
@@ -13,14 +11,11 @@ import 'login_screen.dart';
 import 'add_product_page.dart';
 import 'market_insight_page.dart';
 import 'documents/financial_report_page.dart';
-
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
-
   @override
   State<DashboardPage> createState() => _DashboardPageState();
 }
-
 class _DashboardPageState extends State<DashboardPage> {
   bool loading = true;
   int totalProducts = 0;
@@ -30,28 +25,23 @@ class _DashboardPageState extends State<DashboardPage> {
   String tenantName = 'Memuat Data...';
   Business? businessData;
   List<FlSpot> chartSpots = [];
-
   @override
   void initState() {
     super.initState();
     _loadData();
   }
-
   Future<void> _loadData() async {
     setState(() => loading = true);
     try {
       final business = await ApiService().getMyBusiness();
       setState(() { businessData = business; tenantName = business.businessName; });
       final products = await ApiService().getProducts(business: business.slug, limit: 100);
-
       final categories = products.map((p) => p.categoryName).where((c) => c.isNotEmpty).toSet().toList();
       final sellers = <String>{business.businessName};
-
       final random = Random();
       final generatedSpots = List.generate(7, (index) => 
         FlSpot(index.toDouble(), (40 + random.nextInt(50)).toDouble())
       );
-
       if (!mounted) return;
       setState(() {
         tenantName = business.businessName.toUpperCase();
@@ -71,10 +61,15 @@ class _DashboardPageState extends State<DashboardPage> {
       });
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => Navigator.pushNamed(context, '/pricing-simulator'),
+        icon: const Icon(Icons.calculate),
+        label: const Text('Simulasi Harga Jual'),
+        backgroundColor: Colors.redAccent,
+      ),
       backgroundColor: AppColors.background,
       body: RefreshIndicator(
         color: AppColors.primaryRed,
@@ -111,7 +106,6 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
-
   Widget _buildTopBackground() {
     return Container(
       height: 340,
@@ -130,9 +124,9 @@ class _DashboardPageState extends State<DashboardPage> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color(0xFF0F172A).withOpacity(0.95),
-              const Color(0xFF0F172A).withOpacity(0.4),
-              const Color(0xFF0F172A).withOpacity(0.9),
+              const Color(0xFF0F172A).withValues(alpha: 0.95),
+              const Color(0xFF0F172A).withValues(alpha: 0.4),
+              const Color(0xFF0F172A).withValues(alpha: 0.9),
             ],
             stops: const [0.0, 0.4, 1.0],
           ),
@@ -201,7 +195,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           child: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(Icons.logout, color: Colors.white, size: 20),
@@ -245,17 +239,16 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
-
   Widget _buildSummaryCard() {
     return Container(
       margin: const EdgeInsets.only(top: 24, left: 20, right: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.cardNavy.withOpacity(0.95), 
+        color: AppColors.cardNavy.withValues(alpha: 0.95), 
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 8))
+          BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 15, offset: const Offset(0, 8))
         ],
         image: const DecorationImage(
           image: AssetImage('assets/branding/Fresh Poultry Processing Showcase.png'),
@@ -318,15 +311,14 @@ class _DashboardPageState extends State<DashboardPage> {
                   ],
                 ),
                 const SizedBox(height: 12),
-
                 // BADGE HALAL (NEW DESIGN)
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.successGreen.withOpacity(0.5), width: 1.5),
+                    border: Border.all(color: AppColors.successGreen.withValues(alpha: 0.5), width: 1.5),
                   ),
                   child: Row(
                     children: [
@@ -371,7 +363,6 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
                 Row(
                   children: [
                     Icon(Icons.check_circle, color: connected ? AppColors.successGreen : Colors.red, size: 14),
@@ -385,7 +376,6 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
     );
   }
-
   Widget _buildMetricItem(IconData icon, String label, String value) {
     return Expanded(
       child: Container(
@@ -393,7 +383,7 @@ class _DashboardPageState extends State<DashboardPage> {
         decoration: BoxDecoration(
           color: Colors.transparent, 
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withOpacity(0.2)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
         ),
         child: Row(
           children: [
@@ -415,7 +405,6 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
-
   Widget _buildKpiChart() {
     return Container(
       margin: const EdgeInsets.only(top: 24, left: 20, right: 20),
@@ -424,7 +413,7 @@ class _DashboardPageState extends State<DashboardPage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4))
+          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, 4))
         ],
         border: Border.all(color: AppColors.border),
       ),
@@ -445,7 +434,7 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(color: AppColors.successGreen.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: AppColors.successGreen.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
                 child: Text('+12.5%', style: GoogleFonts.poppins(color: AppColors.successGreen, fontWeight: FontWeight.bold, fontSize: 12)),
               )
             ],
@@ -516,8 +505,8 @@ class _DashboardPageState extends State<DashboardPage> {
                       show: true,
                       gradient: LinearGradient(
                         colors: [
-                          AppColors.primaryRed.withOpacity(0.2),
-                          AppColors.primaryRed.withOpacity(0.0),
+                          AppColors.primaryRed.withValues(alpha: 0.2),
+                          AppColors.primaryRed.withValues(alpha: 0.0),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -532,7 +521,6 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
-
   Widget _buildBusinessBanner() {
     return Container(
       margin: const EdgeInsets.only(top: 24, left: 20, right: 20),
@@ -554,7 +542,7 @@ class _DashboardPageState extends State<DashboardPage> {
               gradient: LinearGradient(
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
-                colors: [AppColors.darkNavy, AppColors.darkNavy.withOpacity(0.0)],
+                colors: [AppColors.darkNavy, AppColors.darkNavy.withValues(alpha: 0.0)],
                 stops: const [0.5, 1.0],
               ),
             ),
@@ -583,7 +571,6 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
-
   Widget _buildOperationalMenu() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -607,14 +594,13 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
-
   Widget _buildMenuItem(IconData icon, String title, String subtitle, Color iconColor, VoidCallback onTap) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 2))],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2))],
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -630,7 +616,6 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
-
   Widget _buildNetworkSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -651,7 +636,6 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
-
   Widget _buildNetworkCard(IconData icon, Color color, String title, String subtitle) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -677,3 +661,6 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 }
+
+
+
