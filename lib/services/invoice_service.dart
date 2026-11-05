@@ -391,7 +391,7 @@ class InvoiceService {
                         ),
                       ),
                       pw.Text(
-                        "a/n $kBankHolder",
+                        "a/n ${business?.legalName ?? business?.businessName ?? 'Pemilik Usaha'}",
                         style: pw.TextStyle(fontSize: 9),
                       ),
                     ],
@@ -541,3 +541,4 @@ class InvoiceService {
     );
   }
 }
+

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../config/theme.dart';
 import '../services/api_service.dart';
 import 'select_courier_page.dart';
+import 'documents/invoice_preview_page.dart';
 import '../models/order.dart';
 
 class OrdersPage extends StatefulWidget {
@@ -73,14 +74,14 @@ class _OrdersPageState extends State<OrdersPage> {
 
     try {
       await ApiService().claimPickup(order.publicId);
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('✅ Pickup berhasil diklaim! Kurir akan segera datang.')),
         );
         _load();
       }
     } catch (e) {
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('❌ Gagal klaim: $e')),
         );
@@ -258,7 +259,7 @@ class _OrdersPageState extends State<OrdersPage> {
                         ),
                       ),
                     );
-                    if (res == true) _load();
+                    if (res == true && mounted) { _load(); }
                   },
                   icon: const Icon(Icons.person_search, size: 16),
                   label: const Text('PILIH KURIR', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
@@ -284,7 +285,30 @@ class _OrdersPageState extends State<OrdersPage> {
                 )
               else
                 OutlinedButton.icon(
-                  onPressed: () {},
+                  onPressed: () async {
+                    try {
+                      final orderDetail = await ApiService().getOrderDetail(order.publicId);
+                      final business = await ApiService().getMyBusiness();
+                      
+                      if (context.mounted) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => InvoicePreviewPage(
+                              business: business,
+                              order: orderDetail,
+                            ),
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Gagal memuat invoice: $e')),
+                        );
+                      }
+                    }
+                  },
                   icon: const Icon(Icons.description_outlined, size: 16),
                   label: const Text('INVOICE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
                   style: OutlinedButton.styleFrom(
@@ -301,4 +325,5 @@ class _OrdersPageState extends State<OrdersPage> {
     );
   }
 }
+
 

@@ -139,7 +139,7 @@ class _StorePageState extends State<StorePage> {
                             ? FileImage(_newCover!)
                             : (coverUrl != null
                                       ? NetworkImage(coverUrl)
-                                      : const AssetImage(
+                                      : const NetworkImage(
                                           'assets/placeholder.png',
                                         ))
                                   as ImageProvider,
@@ -203,9 +203,9 @@ class _StorePageState extends State<StorePage> {
                                     image: FileImage(_newLogo!),
                                     fit: BoxFit.cover,
                                   )
-                                : const DecorationImage(
-                                    image: AssetImage(
-                                      'assets/branding/sauri_logo.png',
+                                : DecorationImage(
+                                    image: NetworkImage(
+                                      _business?.logoUrl ?? 'https://res.cloudinary.com/wqytmco9/image/upload/v1793803253/berkah_logo.png',
                                     ),
                                     fit: BoxFit.cover,
                                   ),
@@ -472,3 +472,4 @@ class _StorePageState extends State<StorePage> {
     );
   }
 }
+

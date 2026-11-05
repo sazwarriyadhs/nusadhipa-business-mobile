@@ -110,10 +110,12 @@ class _DashboardPageState extends State<DashboardPage> {
     return Container(
       height: 340,
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Color(0xFF0F172A), // fallback color
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F172A),
         image: DecorationImage(
-          image: AssetImage('assets/branding/banner_sauri.jpg'), 
+          image: NetworkImage(
+            businessData?.bannerUrl ?? 'https://res.cloudinary.com/wqytmco9/image/upload/v1793803253/berkah_banner.png',
+          ),
           fit: BoxFit.cover,
           alignment: Alignment.bottomCenter,
         ),
@@ -140,11 +142,14 @@ class _DashboardPageState extends State<DashboardPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Image.asset(
-                      'assets/branding/logo_nusadhipa_baru.png', 
+                    // LOGO NUSA-DHIPA
+                    Image.network(
+                      'https://res.cloudinary.com/wqytmco9/image/upload/v1793864717/NUSA-DHIPA_Transparent_Logo_Banner_1.png',
                       height: 45,
                       fit: BoxFit.contain,
                     ),
+
+                    // NOTIFIKASI & LOGOUT
                     Row(
                       children: [
                         Stack(
@@ -239,7 +244,7 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
-  Widget _buildSummaryCard() {
+Widget _buildSummaryCard() {
     return Container(
       margin: const EdgeInsets.only(top: 24, left: 20, right: 20),
       padding: const EdgeInsets.all(20),
@@ -250,7 +255,7 @@ class _DashboardPageState extends State<DashboardPage> {
         boxShadow: [
           BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 15, offset: const Offset(0, 8))
         ],
-        image: const DecorationImage(
+        image: DecorationImage(
           image: AssetImage('assets/branding/Fresh Poultry Processing Showcase.png'),
           fit: BoxFit.cover,
           alignment: Alignment.bottomRight,
@@ -281,13 +286,18 @@ class _DashboardPageState extends State<DashboardPage> {
                       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.asset(
-                          'assets/branding/sauri_logo.png', 
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Text(businessData!.businessName.substring(0, 2).toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
-                          }
-                        ),
+                        child: (businessData?.logoUrl != null && businessData!.logoUrl!.isNotEmpty)
+                            ? Image.network(
+                                businessData!.logoUrl!,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset('assets/branding/logo_nusadhipa_baru.png', fit: BoxFit.contain);
+                                },
+                              )
+                            : Image.asset(
+                                'assets/branding/logo_nusadhipa_baru.png', 
+                                fit: BoxFit.contain,
+                              ),
                       ),
                     ),
                   ],
@@ -528,7 +538,7 @@ class _DashboardPageState extends State<DashboardPage> {
       decoration: BoxDecoration(
         color: AppColors.darkNavy,
         borderRadius: BorderRadius.circular(16),
-        image: const DecorationImage(
+        image: DecorationImage(
           image: AssetImage('assets/branding/Fresh Poultry Processing Showcase.png'), 
           fit: BoxFit.cover,
           alignment: Alignment.centerRight,
@@ -661,6 +671,12 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 }
+
+
+
+
+
+
 
 
 
