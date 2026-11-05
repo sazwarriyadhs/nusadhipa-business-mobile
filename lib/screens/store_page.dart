@@ -376,10 +376,10 @@ class _StorePageState extends State<StorePage> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0F172A).withOpacity(0.95),
+                      color: const Color(0xFF0F172A).withValues(alpha: 0.95),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Colors.greenAccent.withOpacity(0.5),
+                        color: Colors.greenAccent.withValues(alpha: 0.5),
                         width: 1.5,
                       ),
                     ),
@@ -413,10 +413,10 @@ class _StorePageState extends State<StorePage> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
         decoration: BoxDecoration(
-          color: const Color(0xFF0F172A).withOpacity(0.9),
+          color: const Color(0xFF0F172A).withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: Colors.greenAccent.withOpacity(0.5),
+            color: Colors.greenAccent.withValues(alpha: 0.5),
             width: 1,
           ),
         ),

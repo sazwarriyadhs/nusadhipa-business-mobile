@@ -92,7 +92,7 @@ class _SelectCourierPageState extends State<SelectCourierPage> {
                             children: [
                               CircleAvatar(
                                 radius: 24,
-                                backgroundColor: brandRed.withOpacity(0.1),
+                                backgroundColor: brandRed.withValues(alpha: 0.1),
                                 backgroundImage: (c['avatar_url'] != null && c['avatar_url'].toString().isNotEmpty)
                                     ? NetworkImage(c['avatar_url'].toString())
                                     : null,

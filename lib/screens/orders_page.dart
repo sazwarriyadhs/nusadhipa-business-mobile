@@ -190,7 +190,7 @@ class _OrdersPageState extends State<OrdersPage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: line),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,7 +202,7 @@ class _OrdersPageState extends State<OrdersPage> {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(color: brandRed.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                    decoration: BoxDecoration(color: brandRed.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
                     child: const Icon(Icons.receipt_long, color: brandRed, size: 18),
                   ),
                   const SizedBox(width: 10),
@@ -212,7 +212,7 @@ class _OrdersPageState extends State<OrdersPage> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: brandRed.withOpacity(0.1),
+                  color: brandRed.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(order.statusLabel, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: brandRed)),
