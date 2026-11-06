@@ -1,4 +1,3 @@
-import 'dart:math';
 
 class PricingResult {
   final int targetNet;

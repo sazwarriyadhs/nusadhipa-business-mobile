@@ -74,14 +74,14 @@ class _OrdersPageState extends State<OrdersPage> {
 
     try {
       await ApiService().claimPickup(order.publicId);
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('✅ Pickup berhasil diklaim! Kurir akan segera datang.')),
         );
         _load();
       }
     } catch (e) {
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('❌ Gagal klaim: $e')),
         );
@@ -173,7 +173,7 @@ class _OrdersPageState extends State<OrdersPage> {
                   child: Center(child: Text('Belum ada pesanan.', style: TextStyle(color: muted))),
                 )
               else
-                ..._filteredOrders.map((o) => _buildOrderCard(o)).toList(),
+                ..._filteredOrders.map((o) => _buildOrderCard(o)),
             ],
           ),
         ),
@@ -290,7 +290,7 @@ class _OrdersPageState extends State<OrdersPage> {
                       final orderDetail = await ApiService().getOrderDetail(order.publicId);
                       final business = await ApiService().getMyBusiness();
                       
-                      if (context.mounted) {
+                      if (mounted) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -302,7 +302,7 @@ class _OrdersPageState extends State<OrdersPage> {
                         );
                       }
                     } catch (e) {
-                      if (context.mounted) {
+                      if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Gagal memuat invoice: $e')),
                         );

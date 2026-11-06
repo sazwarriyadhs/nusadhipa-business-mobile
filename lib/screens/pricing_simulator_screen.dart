@@ -4,8 +4,10 @@ import '../models/payment_provider.dart';
 import '../services/pricing_calculator.dart';
 
 class PricingSimulatorScreen extends StatefulWidget {
+  const PricingSimulatorScreen({super.key});
+
   @override
-  _PricingSimulatorScreenState createState() => _PricingSimulatorScreenState();
+  State<PricingSimulatorScreen> createState() => _PricingSimulatorScreenState();
 }
 
 class _PricingSimulatorScreenState extends State<PricingSimulatorScreen> {
@@ -66,7 +68,7 @@ class _PricingSimulatorScreenState extends State<PricingSimulatorScreen> {
             ),
             SizedBox(height: 16),
             DropdownButtonFormField<PaymentProvider>(
-              value: _selectedProvider,
+              initialValue: _selectedProvider,
               decoration: InputDecoration(labelText: 'Metode Pembayaran', border: OutlineInputBorder()),
               items: _providers.map((p) {
                 return DropdownMenuItem(value: p, child: Text(p.name));

@@ -53,7 +53,6 @@ class _DashboardPageState extends State<DashboardPage> {
         connected = true;
       });
     } catch (e) {
-      print("ERROR LOAD DATA: $e");
       if (!mounted) return;
       setState(() {
         loading = false;
@@ -189,7 +188,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             );
                             if (confirm == true) {
                               await AuthService().logout();
-                              if (context.mounted) {
+                              if (mounted) {
                                 Navigator.of(context).pushAndRemoveUntil(
                                   MaterialPageRoute(builder: (_) => const LoginScreen()),
                                   (route) => false,
@@ -595,8 +594,8 @@ Widget _buildSummaryCard() {
           _buildMenuItem(Icons.diamond_rounded, 'Identitas Toko', 'Logo dan branding toko Anda', AppColors.primaryRed, () => NavService.switchTab(4)),
           _buildMenuItem(Icons.account_balance_wallet_rounded, 'Keuangan', 'Laporan bisnis dan keuangan', AppColors.darkNavy, () async {
             final business = await ApiService().getMyBusiness();
+            if (!mounted) return;
             setState(() { businessData = business; tenantName = business.businessName; });
-            if (!context.mounted) return;
             Navigator.of(context).push(MaterialPageRoute(builder: (_) => FinancialReportPage(business: business)));
           }),
           _buildMenuItem(Icons.trending_up_rounded, 'Insight Pasar', 'Informasi komoditas dan tren pasar', AppColors.primaryRed, () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const MarketInsightPage()))),

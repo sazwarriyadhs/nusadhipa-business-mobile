@@ -25,7 +25,6 @@ class AppTheme {
         seedColor: AppColors.primaryRed,
         primary: AppColors.primaryRed,
         secondary: AppColors.darkNavy,
-        background: AppColors.background,
         surface: Colors.white,
       ),
       textTheme: GoogleFonts.poppinsTextTheme().apply(

@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:http/http.dart' as http;
+import '../config/api_config.dart';
 import 'package:printing/printing.dart';
 import '../models/business.dart';
 
@@ -26,20 +28,24 @@ class PdfService {
   }
 
   /// Load logo tenant dari asset
-  static Future<Uint8List?> _loadTenantLogo() async {
+  static Future<Uint8List?> _loadTenantLogo(String? logoUrl) async {
+    if (logoUrl == null || logoUrl.trim().isEmpty) return null;
+    final url = ApiConfig.resolveImageUrl(logoUrl);
+    if (url == null) return null;
     try {
-      // final bytes = await rootBundle.load("assets/branding/sauri_logo.png"); // Dihapus
-      return Uint8List(0); // Logo dihapus, return array kosong
-    } catch (_) {
-      return null;
-    }
+      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
+      if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
+        return response.bodyBytes;
+      }
+    } catch (_) {}
+    return null;
   }
 
   /// Load logo platform NUSA-DHIPA
   static Future<Uint8List?> _loadPlatformLogo() async {
     try {
       final bytes = await rootBundle.load("assets/branding/logo_nusadhipa.png");
-      return Uint8List(0); // Logo dihapus, return array kosong
+      return bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
     } catch (_) {
       return null;
     }
@@ -99,8 +105,8 @@ class PdfService {
     required String documentNumber,
     required String documentDate,
   }) async {
-    final logoBytes = await _loadTenantLogo();
-    final logoImage = logoBytes != null ? pw.MemoryImage(logoBytes) : null;
+    final logoBytes = await _loadTenantLogo(business?.logoUrl);
+    final logoImage = (logoBytes != null && logoBytes.isNotEmpty) ? pw.MemoryImage(logoBytes) : null;
 
     final businessName = business?.businessName ?? "Toko Saya";
     final legalName = business?.legalName ?? businessName;
