@@ -368,7 +368,7 @@ class InvoiceService {
                       ),
                       pw.SizedBox(height: 6),
                       pw.Text(
-                        "Transfer ke:",
+                        "Informasi pembayaran:",
                         style: pw.TextStyle(
                           fontSize: 8,
                           color: const PdfColor.fromInt(0xFF777782),
@@ -376,18 +376,11 @@ class InvoiceService {
                       ),
                       pw.SizedBox(height: 4),
                       pw.Text(
-                        kBankName,
+                        "Rekening pembayaran belum tersedia.",
                         style: pw.TextStyle(
-                          fontSize: 10,
+                          fontSize: 9,
                           fontWeight: pw.FontWeight.bold,
-                        ),
-                      ),
-                      pw.Text(
-                        "No. Rek: $kBankAccount",
-                        style: pw.TextStyle(
-                          fontSize: 10,
-                          fontWeight: pw.FontWeight.bold,
-                          color: const PdfColor.fromInt(0xFFE5232E),
+                          color: const PdfColor.fromInt(0xFF777782),
                         ),
                       ),
                       pw.Text(
