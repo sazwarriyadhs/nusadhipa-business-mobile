@@ -96,14 +96,15 @@ class InvoiceService {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.end,
                   children: [
-                    _infoRow("Tanggal", PdfService.formatDate(order.placedAt)),
+                    _infoRow("Tanggal Pesanan", PdfService.formatDate(order.placedAt)),
                     _infoRow("Status", order.statusLabel),
-                    _infoRow(
-                      "Jatuh Tempo",
-                      PdfService.formatDate(
-                        order.placedAt?.add(const Duration(days: 7)),
+                    if (order.status == "pending_payment")
+                      _infoRow(
+                        "Batas Pembayaran",
+                        PdfService.formatDate(
+                          order.placedAt?.add(const Duration(days: 7)),
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -367,32 +368,17 @@ class InvoiceService {
                         ),
                       ),
                       pw.SizedBox(height: 6),
-                      pw.Text(
-                        "Transfer ke:",
-                        style: pw.TextStyle(
-                          fontSize: 8,
-                          color: const PdfColor.fromInt(0xFF777782),
-                        ),
-                      ),
                       pw.SizedBox(height: 4),
                       pw.Text(
-                        kBankName,
+                        order.status == "completed"
+                            ? "Pesanan telah selesai. Tidak ada pembayaran lanjutan."
+                            : order.status == "pending_payment"
+                                ? "Selesaikan pembayaran melalui metode resmi yang dipilih saat checkout."
+                                : "Status pembayaran mengikuti transaksi resmi NUSA-DHIPA.",
                         style: pw.TextStyle(
-                          fontSize: 10,
-                          fontWeight: pw.FontWeight.bold,
+                          fontSize: 9,
+                          color: const PdfColor.fromInt(0xFF55555F),
                         ),
-                      ),
-                      pw.Text(
-                        "No. Rek: $kBankAccount",
-                        style: pw.TextStyle(
-                          fontSize: 10,
-                          fontWeight: pw.FontWeight.bold,
-                          color: const PdfColor.fromInt(0xFFE5232E),
-                        ),
-                      ),
-                      pw.Text(
-                        "a/n ${business?.legalName ?? business?.businessName ?? 'Pemilik Usaha'}",
-                        style: pw.TextStyle(fontSize: 9),
                       ),
                     ],
                   ),
@@ -428,7 +414,7 @@ class InvoiceService {
                             textAlign: pw.TextAlign.center,
                           ),
                           pw.Text(
-                            "Direktur",
+                            "Perwakilan Usaha",
                             style: pw.TextStyle(
                               fontSize: 8,
                               color: const PdfColor.fromInt(0xFF777782),

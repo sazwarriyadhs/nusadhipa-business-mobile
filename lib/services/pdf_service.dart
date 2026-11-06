@@ -8,11 +8,6 @@ import '../config/api_config.dart';
 import 'package:printing/printing.dart';
 import '../models/business.dart';
 
-/// Data bank tenant — sementara hardcode
-const kBankName = "OCBC NISP";
-const kBankAccount = "020678903331";
-// const kBankHolder = "PT Sauri Unggul Sejahtera"; // Dihapus
-
 class PdfService {
   static final _currency = NumberFormat.currency(
     locale: "id_ID",

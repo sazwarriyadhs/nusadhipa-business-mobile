@@ -11,22 +11,9 @@ class MarketInsightPage extends StatefulWidget {
 class _MarketInsightPageState extends State<MarketInsightPage> {
   String selectedTab = 'pangan';
 
-  final panganData = [
-    ('🍚', 'Beras Medium', 'Rp 14.012', '-0.5%', false),
-    ('🌶️', 'Cabai Rawit Merah', 'Rp 81.268', '+2.1%', true),
-    ('🧄', 'Bawang Merah', 'Rp 38.500', '-1.2%', false),
-    ('🐔', 'Ayam Ras', 'Rp 36.750', '+0.8%', true),
-    ('🥚', 'Telur Ayam', 'Rp 28.900', '-0.3%', false),
-    ('🫒', 'Minyak Goreng', 'Rp 17.200', '+0.5%', true),
-  ];
-
-  final ikanData = [
-    ('🐟', 'Ikan Tongkol', 'Rp 40.449', '+1.2%', true),
-    ('🐠', 'Ikan Kembung', 'Rp 42.000', '-0.8%', false),
-    ('🦐', 'Udang', 'Rp 95.000', '+2.5%', true),
-    ('🐟', 'Ikan Bandeng', 'Rp 38.000', '-1.0%', false),
-    ('🐠', 'Ikan Layang', 'Rp 35.000', '+0.6%', true),
-  ];
+  // Data pasar hanya ditampilkan setelah terhubung ke sumber resmi.
+  final List<(String, String, String, String, bool)> panganData = [];
+  final List<(String, String, String, String, bool)> ikanData = [];
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +77,7 @@ class _MarketInsightPageState extends State<MarketInsightPage> {
                 ),
                 SizedBox(height: 5),
                 Text(
-                  'Sumber: PIHPS BI & KKP',
+                  'Sumber data resmi belum terhubung',
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 11,
@@ -124,7 +111,20 @@ class _MarketInsightPageState extends State<MarketInsightPage> {
           ),
           const SizedBox(height: 16),
 
-          // List
+          // Jangan tampilkan angka contoh sebagai harga pasar aktual.
+          if (data.isEmpty)
+            Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: line),
+              ),
+              child: const Text(
+                'Data harga pasar belum tersedia. Informasi akan ditampilkan setelah integrasi sumber resmi aktif.',
+                style: TextStyle(fontSize: 12, color: muted, height: 1.5),
+              ),
+            ),
           ...data.map(
             (item) => Padding(
               padding: const EdgeInsets.only(bottom: 10),
@@ -152,7 +152,7 @@ class _MarketInsightPageState extends State<MarketInsightPage> {
                 SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Data sample — integrasi API KKP & PIHPS segera hadir.',
+                    'Data harga pasar belum tersedia; tidak ada angka estimasi yang ditampilkan.',
                     style: TextStyle(
                       color: goldDeep,
                       fontSize: 11,

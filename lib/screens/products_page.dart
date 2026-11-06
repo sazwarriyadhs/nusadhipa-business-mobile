@@ -35,15 +35,11 @@ class _ProductsPageState extends State<ProductsPage> {
     });
 
     try {
-      Business? biz;
-      try {
-        biz = await ApiService().getMyBusiness();
-      } catch (_) {
-        biz = null;
+      final biz = await ApiService().getMyBusiness();
+      final slug = biz.slug.trim();
+      if (slug.isEmpty) {
+        throw ApiException('Tenant belum memiliki identitas katalog yang valid.');
       }
-
-      // Fallback slug jika biz null (sementara hardcode)
-      final slug = biz?.slug ?? 'fresh-market-unggas-animal-petfood-indonesia';
 
       final result = await ApiService().getProducts(
         limit: 100,
