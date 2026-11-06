@@ -44,3 +44,6 @@ __pycache__/
 *.aab
 app-release.apk
 build/
+
+# Local backups
+backup_*/

@@ -53,6 +53,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'fab_dashboard_pricing',
         onPressed: () => Navigator.pushNamed(context, '/pricing-simulator'),
         icon: const Icon(Icons.calculate),
         label: const Text('Simulasi Harga Jual'),
