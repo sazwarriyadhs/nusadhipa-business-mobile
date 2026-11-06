@@ -45,6 +45,9 @@ flutter:
     - assets/placeholder.png
     - assets/products/
 
+
+    - assets/fonts/
+
 flutter_native_splash:
   color: "#FFFFFF"
   image: "assets/images/logo.png"
